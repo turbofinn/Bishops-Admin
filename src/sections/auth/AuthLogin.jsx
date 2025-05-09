@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 // material-ui
 import Button from '@mui/material/Button';
@@ -14,6 +14,9 @@ import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 // third-party
 import * as Yup from 'yup';
@@ -31,8 +34,11 @@ import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
 
 export default function AuthLogin({ isDemo = false }) {
   const [checked, setChecked] = React.useState(false);
-
   const [showPassword, setShowPassword] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState('');
+  const navigate = useNavigate();
+
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -41,11 +47,48 @@ export default function AuthLogin({ isDemo = false }) {
     event.preventDefault();
   };
 
+  const handleLogin = async (values, { setSubmitting }) => {
+    setLoading(true);
+    setError('');
+    
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // For demo: accept any valid email format and any password with length >= 6
+      if (values.email && values.password.length >= 6) {
+        // Store login state in localStorage or sessionStorage depending on "Keep me signed in"
+        if (checked) {
+          localStorage.setItem('isLoggedIn', 'true');
+          localStorage.setItem('user', JSON.stringify({ email: values.email }));
+        } else {
+          sessionStorage.setItem('isLoggedIn', 'true');
+          sessionStorage.setItem('user', JSON.stringify({ email: values.email }));
+        }
+        
+        // Redirect to dashboard
+        navigate('/dashboard');
+      } else {
+        setError('Invalid email or password');
+      }
+    } catch (err) {
+      setError('Login failed. Please try again.');
+      console.error('Login error:', err);
+    } finally {
+      setLoading(false);
+      setSubmitting(false);
+    }
+  };
+
+  const handleCloseError = () => {
+    setError('');
+  };
+
   return (
     <>
       <Formik
         initialValues={{
-          email: 'info@codedthemes.com',
+          email: 'admin@example.com',
           password: '123456',
           submit: null
         }}
@@ -54,11 +97,13 @@ export default function AuthLogin({ isDemo = false }) {
           password: Yup.string()
             .required('Password is required')
             .test('no-leading-trailing-whitespace', 'Password cannot start or end with spaces', (value) => value === value.trim())
-            .max(10, 'Password must be less than 10 characters')
+            .min(6, 'Password must be at least 6 characters')
+            .max(20, 'Password must be less than 20 characters')
         })}
+        onSubmit={handleLogin}
       >
-        {({ errors, handleBlur, handleChange, touched, values }) => (
-          <form noValidate>
+        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
+          <form noValidate onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               <Grid size={12}>
                 <Stack sx={{ gap: 1 }}>
@@ -136,8 +181,16 @@ export default function AuthLogin({ isDemo = false }) {
               </Grid>
               <Grid size={12}>
                 <AnimateButton>
-                  <Button fullWidth size="large" variant="contained" color="primary">
-                    Login
+                  <Button 
+                    fullWidth 
+                    size="large" 
+                    variant="contained" 
+                    color="primary"
+                    type="submit"
+                    disabled={loading || isSubmitting}
+                    startIcon={loading && <CircularProgress size={20} color="inherit" />}
+                  >
+                    {loading ? 'Logging in...' : 'Login'}
                   </Button>
                 </AnimateButton>
               </Grid>
@@ -145,6 +198,12 @@ export default function AuthLogin({ isDemo = false }) {
           </form>
         )}
       </Formik>
+
+      <Snackbar open={!!error} autoHideDuration={6000} onClose={handleCloseError}>
+        <Alert onClose={handleCloseError} severity="error">
+          {error}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

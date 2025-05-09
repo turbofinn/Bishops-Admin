@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -46,13 +47,15 @@ function a11yProps(index) {
   };
 }
 
-// ==============================|| HEADER CONTENT - PROFILE ||============================== //
-
 export default function Profile() {
   const theme = useTheme();
-
+  const navigate = useNavigate();
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(0);
+
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true' || sessionStorage.getItem('isLoggedIn') === 'true';
+
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
   };
@@ -64,11 +67,38 @@ export default function Profile() {
     setOpen(false);
   };
 
-  const [value, setValue] = useState(0);
-
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('user');
+    sessionStorage.removeItem('isLoggedIn');
+    sessionStorage.removeItem('user');
+    navigate('/login');
+    setOpen(false);
+  };
+
+  if (!isLoggedIn) {
+    return (
+      <Stack direction="row" spacing={2}>
+        <Button 
+          variant="outlined" 
+          onClick={() => navigate('/login')}
+          sx={{ color: 'inherit' }}
+        >
+          Login
+        </Button>
+        <Button 
+          variant="contained" 
+          onClick={() => navigate('/register')}
+        >
+          Sign Up
+        </Button>
+      </Stack>
+    );
+  }
 
   return (
     <Box sx={{ flexShrink: 0, ml: 0.75 }}>
@@ -132,7 +162,7 @@ export default function Profile() {
                       </Grid>
                       <Grid>
                         <Tooltip title="Logout">
-                          <IconButton size="large" sx={{ color: 'text.primary' }}>
+                          <IconButton size="large" sx={{ color: 'text.primary' }} onClick={handleLogout}>
                             <LogoutOutlined />
                           </IconButton>
                         </Tooltip>
@@ -177,7 +207,7 @@ export default function Profile() {
                     </Tabs>
                   </Box>
                   <TabPanel value={value} index={0} dir={theme.direction}>
-                    <ProfileTab />
+                    <ProfileTab handleLogout={handleLogout} />
                   </TabPanel>
                   <TabPanel value={value} index={1} dir={theme.direction}>
                     <SettingTab />
