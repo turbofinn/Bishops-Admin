@@ -67,7 +67,7 @@ export default function AuthLogin({ isDemo = false }) {
         }
         
         // Redirect to dashboard
-        navigate('/dashboard');
+        navigate('/dashboard/default');
       } else {
         setError('Invalid email or password');
       }
