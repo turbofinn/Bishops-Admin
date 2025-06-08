@@ -8,6 +8,7 @@ import DashboardLayout from 'layout/Dashboard';
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/default')));
 const VaccinePage = Loadable(lazy(() => import('pages/vaccines/VaccinePage')));
 const BookingPage = Loadable(lazy(() => import('pages/bookings/BookingPage')));
+const AppointmentPage = Loadable(lazy(() => import('pages/appointments/AppointmentPage')));
 const Users = Loadable(lazy(() => import('pages/users/UserPage')));
 
 // ==============================|| MAIN ROUTING ||============================== //
@@ -29,8 +30,12 @@ const MainRoutes = {
         }
         ,
         {
-          path: 'bookings',
+          path: 'vaccine-bookings',
           element: <BookingPage/>
+        },
+        {
+          path: 'appointments',
+          element: <AppointmentPage/>
         },
         {
           path: 'Vaccines',

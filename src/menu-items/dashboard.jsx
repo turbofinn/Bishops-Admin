@@ -1,15 +1,13 @@
 // assets
-import { DashboardOutlined } from '@ant-design/icons';
-import { ContactsOutlined } from '@ant-design/icons';
-import { MedicineBoxOutlined } from '@ant-design/icons';
-import { UserAddOutlined } from '@ant-design/icons';
+import { DashboardOutlined, ScheduleOutlined, ContactsOutlined, MedicineBoxOutlined, UserAddOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
   DashboardOutlined,
   ContactsOutlined,
   MedicineBoxOutlined,
-  UserAddOutlined
+  UserAddOutlined,
+  ScheduleOutlined
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
@@ -37,10 +35,18 @@ const dashboard = {
     },
     {
       id: 'booking',
-      title: 'Bookings',
+      title: 'Vaccine Bookings',
       type: 'item',
-      url: '/dashboard/bookings',
+      url: '/dashboard/vaccine-bookings',
       icon: icons.ContactsOutlined,
+      breadcrumbs: false
+    },
+    {
+      id: 'appointments',
+      title: 'Appointments',
+      type: 'item',
+      url: '/dashboard/appointments',
+      icon: icons.ScheduleOutlined,
       breadcrumbs: false
     },
     {

@@ -68,10 +68,10 @@ const headCells = [
     label: 'Phone Number'
   },
   {
-    id: 'vaccinesIDs',
+    id: 'appointmentType',
     align: 'left',
     disablePadding: false,
-    label: 'Vaccines'
+    label: 'Appointment Type'
   },
   {
     id: 'slot',
@@ -99,7 +99,7 @@ const headCells = [
   }
 ];
 
-export default function BookingTable({ bookings, onViewDetails, onApprove, onCancel }) {
+export default function AppointmentTable({ bookings, onViewDetails, onApprove, onCancel }) {
   return (
     <Box>
       <TableContainer
@@ -125,7 +125,7 @@ export default function BookingTable({ bookings, onViewDetails, onApprove, onCan
           <TableBody>
             {bookings && bookings.length > 0 ? (
               bookings
-                .filter((booking) => booking.type === 'vaccination')
+                .filter((booking) => booking.type === 'consultation')
                 .map((booking, index) => (
                   <TableRow
                     hover
@@ -141,11 +141,7 @@ export default function BookingTable({ bookings, onViewDetails, onApprove, onCan
                       <Typography variant="body2">{booking.phoneNumber || 'N/A'}</Typography>
                     </TableCell>
                     <TableCell>
-                      <Stack direction="row" spacing={1}>
-                        {booking.vaccinesIDs?.split(',').map((vaccine, i) => (
-                          <Chip key={i} label={vaccine.trim()} size="small" color="primary" variant="outlined" />
-                        ))}
-                      </Stack>
+                      <Typography variant="body2">{booking.consultationType || 'N/A'}</Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2">
@@ -208,7 +204,7 @@ BookingStatus.propTypes = {
   status: PropTypes.string
 };
 
-BookingTable.propTypes = {
+AppointmentTable.propTypes = {
   bookings: PropTypes.array,
   onViewDetails: PropTypes.func,
   onApprove: PropTypes.func,
