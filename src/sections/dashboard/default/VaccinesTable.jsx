@@ -157,11 +157,11 @@ export default function VaccinesTable({ vaccines, onEdit, onStatusChange }) {
                 key={vaccine.vaccineID || index}
               >
                 <TableCell>
-                  <Avatar 
-                    alt={vaccine.name} 
-                    src={getImageSource(vaccine, index)} 
-                    sx={{ 
-                      width: 56, 
+                  <Avatar
+                    alt={vaccine.name}
+                    src={vaccine.pictureUrl}
+                    sx={{
+                      width: 56,
                       height: 56,
                       border: '1px solid #f0f0f0',
                       backgroundColor: '#ffffff'
@@ -171,6 +171,7 @@ export default function VaccinesTable({ vaccines, onEdit, onStatusChange }) {
                       onError: () => handleImageError(vaccine.name, index)
                     }}
                   />
+
                 </TableCell>
                 <TableCell>
                   <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
@@ -179,8 +180,8 @@ export default function VaccinesTable({ vaccines, onEdit, onStatusChange }) {
                 </TableCell>
                 <TableCell>{vaccine.compositions}</TableCell>
                 <TableCell sx={{ maxWidth: '300px' }}>
-                  <Typography 
-                    sx={{ 
+                  <Typography
+                    sx={{
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       display: '-webkit-box',
@@ -193,7 +194,7 @@ export default function VaccinesTable({ vaccines, onEdit, onStatusChange }) {
                 </TableCell>
                 <TableCell align="right">
                   <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                  €{vaccine.price}
+                    €{vaccine.price}
                   </Typography>
                 </TableCell>
                 <TableCell>
@@ -201,8 +202,8 @@ export default function VaccinesTable({ vaccines, onEdit, onStatusChange }) {
                 </TableCell>
                 <TableCell align="center">
                   <Tooltip title="Edit Vaccine">
-                    <IconButton 
-                      aria-label="edit" 
+                    <IconButton
+                      aria-label="edit"
                       onClick={() => handleEdit(vaccine)}
                       color="primary"
                       sx={{ mx: 0.5 }}

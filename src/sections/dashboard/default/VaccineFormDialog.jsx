@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
+
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -40,15 +43,14 @@ export default function VaccineFormDialog({ open, onClose, onSave, vaccine }) {
   });
   const [errors, setErrors] = useState({});
   const [uploadedImage, setUploadedImage] = useState(null);
-  const [originalName, setOriginalName] = useState(''); // Track original name for reference
+  const [uploading, setUploading] = useState(false);
+  const [originalName, setOriginalName] = useState('');
   const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (open) {
       if (vaccine) {
-        // Store original values when editing
         setOriginalName(vaccine.name || '');
-        
         setFormData({
           id: vaccine.vaccineID || '',
           name: vaccine.name || '',
@@ -58,9 +60,7 @@ export default function VaccineFormDialog({ open, onClose, onSave, vaccine }) {
           pictureUrl: vaccine.pictureUrl || FALLBACK_IMAGES[0],
           status: vaccine.status || 'Available'
         });
-        setUploadedImage(null);
       } else {
-        // Reset form for new vaccine
         setOriginalName('');
         setFormData({
           id: '',
@@ -71,7 +71,6 @@ export default function VaccineFormDialog({ open, onClose, onSave, vaccine }) {
           pictureUrl: FALLBACK_IMAGES[0],
           status: 'Available'
         });
-        setUploadedImage(null);
       }
       setErrors({});
     }
@@ -79,30 +78,74 @@ export default function VaccineFormDialog({ open, onClose, onSave, vaccine }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: name === 'price' ? value : value
-    }));
-    
+    setFormData(prev => ({ ...prev, [name]: value }));
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
-  const handleSelectImage = (imageUrl) => {
-    setFormData(prev => ({ ...prev, pictureUrl: imageUrl }));
-    setUploadedImage(null);
+  const uploadFileToS3 = async (url, file) => {
+    const config = {
+      headers: { 'Content-Type': file.type },
+      onUploadProgress: (progressEvent) => {
+        const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        console.log(`Upload progress: ${percent}%`);
+      },
+      ignoreDefaultAuth: true
+    };
+    await axios.put(url, file, config);
   };
 
-  const handleFileUpload = (e) => {
+  const handleFileUpload = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
+
+    if (!file) return;
+    const reader = new FileReader();
       reader.onloadend = () => {
         setUploadedImage(reader.result);
-        setFormData(prev => ({ ...prev, pictureUrl: reader.result }));
       };
       reader.readAsDataURL(file);
+
+    // Create preview URL and show immediately
+    const actualFileName = `${uuidv4()}_${uuidv4()}_${file.name}`;
+
+    setFormData(prev => ({
+      ...prev,
+      pictureUrl: actualFileName
+    }));
+
+
+    const data = {
+      type: "VACCINE_IMAGE",
+      mimeType: file.type,
+      key: actualFileName
+    };
+
+    try {
+      setUploading(true);
+
+      // Request presigned URL
+      const res = await axios.post(
+        'https://7n0wver1gl.execute-api.eu-west-2.amazonaws.com/dev/get-presigned-url', 
+        data
+      );
+
+      if (!res.data?.response || res.data.response.responseCode !== 1001 || !res.data.url) {
+        throw new Error('Failed to get presigned URL');
+      }
+
+      const uploadUrl = res.data.url;
+
+      // Upload file to S3
+      await uploadFileToS3(uploadUrl, file);
+
+    } catch (error) {
+      console.error("Image upload failed:", error);
+      alert("Image upload failed. Please try again.");
+    } finally {
+      setUploading(false);
+      // Revoke preview URL to release memory
+      URL.revokeObjectURL(previewUrl);
     }
   };
 
@@ -112,21 +155,16 @@ export default function VaccineFormDialog({ open, onClose, onSave, vaccine }) {
 
   const validateForm = () => {
     const newErrors = {};
-    
     if (!formData.name.trim()) newErrors.name = 'Name is required';
     if (!formData.compositions.trim()) newErrors.compositions = 'Compositions are required';
     if (!formData.description.trim()) newErrors.description = 'Description is required';
     if (formData.price === '' || isNaN(parseFloat(formData.price))) newErrors.price = 'Valid price is required';
-    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = () => {
     if (validateForm()) {
-      // For debugging - log the form data we're sending
-      console.log('Submitting form data:', formData);
-      console.log('Original name was:', originalName);
       onSave(formData);
     }
   };
@@ -161,28 +199,21 @@ export default function VaccineFormDialog({ open, onClose, onSave, vaccine }) {
         <IconButton
           aria-label="close"
           onClick={onClose}
-          sx={{
-            color: 'white',
-            '&:hover': {
-              bgcolor: 'primary.dark',
-            },
-          }}
+          sx={{ color: 'white' }}
         >
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      
+
       <DialogContent sx={{ mt: 2 }}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={8}>
             {originalName && (
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="caption" color="text.secondary">
-                  Original Name: {originalName}
-                </Typography>
-              </Box>
+              <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
+                Original Name: {originalName}
+              </Typography>
             )}
-            
+
             <TextField
               name="name"
               label="Vaccine Name"
@@ -194,7 +225,7 @@ export default function VaccineFormDialog({ open, onClose, onSave, vaccine }) {
               helperText={errors.name}
               required
             />
-            
+
             <TextField
               name="compositions"
               label="Compositions"
@@ -206,7 +237,7 @@ export default function VaccineFormDialog({ open, onClose, onSave, vaccine }) {
               helperText={errors.compositions}
               required
             />
-            
+
             <TextField
               name="description"
               label="Description"
@@ -220,7 +251,7 @@ export default function VaccineFormDialog({ open, onClose, onSave, vaccine }) {
               rows={4}
               required
             />
-            
+
             <TextField
               name="price"
               label="Price"
@@ -235,7 +266,7 @@ export default function VaccineFormDialog({ open, onClose, onSave, vaccine }) {
               }}
               required
             />
-            
+
             <FormControl fullWidth margin="normal">
               <InputLabel id="status-label">Status</InputLabel>
               <Select
@@ -251,43 +282,30 @@ export default function VaccineFormDialog({ open, onClose, onSave, vaccine }) {
               </Select>
             </FormControl>
           </Grid>
-          
+
           <Grid item xs={12} md={4}>
             <Box sx={{ mt: 2, textAlign: 'center' }}>
-              <Typography variant="subtitle1" gutterBottom>
-                Selected Image:
-              </Typography>
-              <Box 
-                sx={{ 
-                  mt: 2,
-                  mb: 3,
-                  display: 'flex',
-                  justifyContent: 'center'
-                }}
-              >
+              <Typography variant="subtitle1">Selected Image:</Typography>
+              <Box sx={{ mt: 2, mb: 3, display: 'flex', justifyContent: 'center' }}>
                 <Avatar
-                  src={uploadedImage || formData.pictureUrl}
-                  alt="Vaccine"
+                  src={uploadedImage}
                   variant="rounded"
-                  sx={{ 
-                    width: 150, 
-                    height: 150,
-                    border: '1px solid #e0e0e0',
-                    bgcolor: 'background.paper'
-                  }}
+                  alt="Vaccine Image"
+                  sx={{ width: 150, height: 150, border: '1px solid #e0e0e0', bgcolor: 'background.paper' }}
                 >
                   <ImageIcon sx={{ fontSize: 40 }} />
                 </Avatar>
               </Box>
-              
+
               <Button
                 variant="outlined"
                 startIcon={<CloudUploadIcon />}
                 onClick={triggerFileInput}
                 fullWidth
+                disabled={uploading}
                 sx={{ mb: 2 }}
               >
-                Upload Image
+                {uploading ? 'Uploading...' : 'Upload Image'}
               </Button>
               <input
                 type="file"
@@ -300,12 +318,12 @@ export default function VaccineFormDialog({ open, onClose, onSave, vaccine }) {
           </Grid>
         </Grid>
       </DialogContent>
-      
+
       <DialogActions sx={{ px: 3, pb: 3 }}>
         <Button onClick={onClose} color="secondary" variant="outlined">
           Cancel
         </Button>
-        <Button onClick={handleSubmit} color="primary" variant="contained">
+        <Button onClick={handleSubmit} color="primary" variant="contained" disabled={uploading}>
           {formData.id ? 'Update Vaccine' : 'Add Vaccine'}
         </Button>
       </DialogActions>
