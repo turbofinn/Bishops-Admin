@@ -24,7 +24,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import Dot from 'components/@extended/Dot';
 
 // Status component for bookings
-function BookingStatus({ status }) {
+function PaymentStatus({ status }) {
   let color;
   let title = status;
 
@@ -68,25 +68,25 @@ const headCells = [
     label: 'Phone Number'
   },
   {
-    id: 'vaccinesIDs',
+    id: 'paymentAmount',
     align: 'left',
     disablePadding: false,
-    label: 'Vaccines'
+    label: 'Amount'
   },
   {
-    id: 'slot',
+    id: 'paymentDate',
     align: 'left',
     disablePadding: false,
-    label: 'Time Slot'
+    label: 'Payment Date'
   },
   {
     id: 'paymentMethod',
     align: 'left',
     disablePadding: false,
-    label: 'Payment'
+    label: 'Payment Mode'
   },
   {
-    id: 'status',
+    id: 'paymentStatus',
     align: 'left',
     disablePadding: false,
     label: 'Status'
@@ -95,12 +95,12 @@ const headCells = [
     id: 'actions',
     align: 'center',
     disablePadding: false,
-    label: 'Actions'
+    label: 'Mark as Paid'
   }
 ];
 
-export default function BookingTable({ bookings, onViewDetails, onApprove, onCancel }) {
-  console.log("booookkkk", bookings)
+export default function PaymentTable({ payments }) {
+  console.log("booookkkk", payments)
   return (
     <Box>
       <TableContainer
@@ -124,9 +124,8 @@ export default function BookingTable({ bookings, onViewDetails, onApprove, onCan
             </TableRow>
           </TableHead>
           <TableBody>
-            {bookings && bookings.length > 0 ? (
-              bookings
-                .filter((booking) => booking.type && booking.type.trim().toLowerCase() === 'vaccination')
+            {payments && payments.length > 0 ? (
+              payments
                 .map((booking, index) => (
                   <TableRow
                     hover
@@ -136,40 +135,34 @@ export default function BookingTable({ bookings, onViewDetails, onApprove, onCan
                     key={booking.bookingId || index}
                   >
                     <TableCell>
-                      <Typography variant="body2">{booking.name || 'N/A'}</Typography>
+                      <Typography variant="body2">{booking.userName || 'N/A'}</Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography variant="body2">{booking.phoneNumber || 'N/A'}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Stack direction="row" spacing={1}>
-                        {booking.vaccinesIDs?.split(',').map((vaccine, i) => (
-                          <Chip key={i} label={vaccine.trim()} size="small" color="primary" variant="outlined" />
-                        ))}
-                      </Stack>
+                      <Typography variant="body2">{booking.mobileNo || 'N/A'}</Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2">
-                        {booking.slot} {booking.meridiem}
+                        {booking.slot} {booking.paymentAmount}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">
+                        {booking.slot} {booking.paymentDate}
                       </Typography>
                     </TableCell>
                     <TableCell>
                       <Chip
-                        label={booking.paymentMethod || 'N/A'}
-                        color={booking.paymentMethod === 'CARD' ? 'success' : 'primary'}
+                        label={booking.paymentMethod || 'Offline'}
+                        color={booking.paymentMethod === 'Online' ? 'success' : 'primary'}
                         size="small"
                       />
                     </TableCell>
                     <TableCell>
-                      <BookingStatus status={booking.status || 'Booked'} />
+                      <PaymentStatus status={booking.paymentStatus || 'Unpaid'} />
                     </TableCell>
                     <TableCell align="center">
                       <Stack direction="row" justifyContent="center">
-                        <Tooltip title="View Details">
-                          <IconButton aria-label="view" onClick={() => onViewDetails(booking)} color="primary" size="small">
-                            <VisibilityIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
+
 
                         {booking.status !== 'Approved' && booking.status !== 'Cancelled' && (
                           <Tooltip title="Approve Booking">
@@ -179,13 +172,7 @@ export default function BookingTable({ bookings, onViewDetails, onApprove, onCan
                           </Tooltip>
                         )}
 
-                        {booking.status !== 'Cancelled' && (
-                          <Tooltip title="Cancel Booking">
-                            <IconButton aria-label="cancel" onClick={() => onCancel(booking)} color="error" size="small">
-                              <CancelIcon fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
-                        )}
+
                       </Stack>
                     </TableCell>
                   </TableRow>
@@ -205,11 +192,11 @@ export default function BookingTable({ bookings, onViewDetails, onApprove, onCan
     </Box>
   );
 }
-BookingStatus.propTypes = {
+PaymentTable.propTypes = {
   status: PropTypes.string
 };
 
-BookingTable.propTypes = {
+PaymentTable.propTypes = {
   bookings: PropTypes.array,
   onViewDetails: PropTypes.func,
   onApprove: PropTypes.func,

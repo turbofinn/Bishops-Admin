@@ -51,8 +51,10 @@ export default function AuthLogin() {
         otp: values.otp,
         clientID
       });
-      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('isLoggedIn', response.data?.tokenPair?.accessToken ? 'true' : 'false');
       localStorage.setItem('user', JSON.stringify({ mobileNo: values.mobileNo }));
+      localStorage.setItem('bishops-token', response.data?.tokenPair?.accessToken);
+      localStorage.setItem('bishops-refersh-token', response.data?.tokenPair?.refreshToken);
       navigate('/dashboard/default');
     } catch (err) {
       console.error(err);

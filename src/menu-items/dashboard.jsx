@@ -50,10 +50,18 @@ const dashboard = {
       breadcrumbs: false
     },
     {
-      id: 'users',
-      title: 'Users',
+      id: 'payments',
+      title: 'Payments',
       type: 'item',
-      url: '/dashboard/users',
+      url: '/dashboard/payments',
+      icon: icons.ScheduleOutlined,
+      breadcrumbs: false
+    },
+    {
+      id: 'Services',
+      title: 'Services',
+      type: 'item',
+      url: '/dashboard/Services',
       icon: icons.UserAddOutlined,
       breadcrumbs: false
     }

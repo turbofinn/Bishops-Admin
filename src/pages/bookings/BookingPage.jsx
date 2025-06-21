@@ -73,7 +73,7 @@ export default function BookingPage() {
         'https://7n0wver1gl.execute-api.eu-west-2.amazonaws.com/dev/fetch-bookings-by-date',
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('bishops-token')}` },
           body: JSON.stringify({
             date: formattedDate,
             ...(selectedStatus && { status: selectedStatus }),
@@ -97,7 +97,8 @@ export default function BookingPage() {
           paymentMethod: booking.paymentMethod || 'N/A',
           status: booking.status || 'Booked',
           userID: booking.userID || '',
-          pharmacyNo: booking.consultantID || pharmacyNo
+          pharmacyNo: booking.consultantID || pharmacyNo,
+          type: booking.type
         }));
         setBookings(transformedBookings);
       } else if (data?.responseStatus?.code === 1001) {
@@ -214,7 +215,7 @@ export default function BookingPage() {
                 </Select>
               </FormControl>
             </Grid>
-        
+
             <Grid item xs={12} md={3}>
               <Button
                 variant="contained"
@@ -295,7 +296,7 @@ export default function BookingPage() {
                     </Grid>
                   </Paper>
                 </Grid>
-                
+
                 <Grid item xs={12}>
                   <Divider sx={{ my: 1 }} />
                   <Typography variant="h6" sx={{ mb: 1 }}>Patient Information</Typography>
@@ -320,7 +321,7 @@ export default function BookingPage() {
                     </Grid>
                   </Paper>
                 </Grid>
-                
+
                 <Grid item xs={12}>
                   <Divider sx={{ my: 1 }} />
                   <Typography variant="h6" sx={{ mb: 1 }}>Vaccine Information</Typography>
@@ -328,10 +329,10 @@ export default function BookingPage() {
                     <Typography variant="subtitle2">Selected Vaccines</Typography>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
                       {detailsDialog.booking.vaccinesIDs?.split(',').map((vaccine, i) => (
-                        <Chip 
-                          key={i} 
-                          label={vaccine.trim()} 
-                          color="primary" 
+                        <Chip
+                          key={i}
+                          label={vaccine.trim()}
+                          color="primary"
                         />
                       ))}
                     </Box>
@@ -344,24 +345,24 @@ export default function BookingPage() {
         <DialogActions>
           <Button onClick={handleCloseDetailsDialog}>Close</Button>
           {detailsDialog.booking && detailsDialog.booking.status !== 'Approved' && detailsDialog.booking.status !== 'Cancelled' && (
-            <Button 
+            <Button
               onClick={() => {
                 handleCloseDetailsDialog();
                 handleApproveBooking(detailsDialog.booking);
-              }} 
-              color="success" 
+              }}
+              color="success"
               variant="contained"
             >
               Approve
             </Button>
           )}
           {detailsDialog.booking && detailsDialog.booking.status !== 'Cancelled' && (
-            <Button 
+            <Button
               onClick={() => {
                 handleCloseDetailsDialog();
                 handleCancelBooking(detailsDialog.booking);
-              }} 
-              color="error" 
+              }}
+              color="error"
               variant="contained"
             >
               Cancel
@@ -386,10 +387,10 @@ export default function BookingPage() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseConfirmDialog}>Cancel</Button>
-          <Button 
-            onClick={confirmAction} 
-            color={confirmDialog.action === 'approve' ? 'success' : 'error'} 
-            variant="contained" 
+          <Button
+            onClick={confirmAction}
+            color={confirmDialog.action === 'approve' ? 'success' : 'error'}
+            variant="contained"
             autoFocus
           >
             Confirm
@@ -404,9 +405,9 @@ export default function BookingPage() {
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Alert 
-          onClose={handleCloseSnackbar} 
-          severity={snackbar.severity} 
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
           sx={{ width: '100%' }}
         >
           {snackbar.message}

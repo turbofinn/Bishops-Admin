@@ -3,6 +3,9 @@ import { lazy } from 'react';
 // project imports
 import Loadable from 'components/Loadable';
 import DashboardLayout from 'layout/Dashboard';
+import PaymentTable from '../sections/dashboard/default/PaymentTable';
+import PaymentPage from '../pages/PaymentPage/PaymentPage';
+import ServicePage from '../pages/Services/ServicePage';
 
 // render- Dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/default')));
@@ -31,20 +34,30 @@ const MainRoutes = {
         ,
         {
           path: 'vaccine-bookings',
-          element: <BookingPage/>
+          element: <BookingPage />
         },
         {
           path: 'appointments',
-          element: <AppointmentPage/>
+          element: <AppointmentPage />
         },
         {
           path: 'Vaccines',
-          element: <VaccinePage/>
+          element: <VaccinePage />
+        },
+
+        {
+          path: 'Payments',
+          element: <PaymentPage />
+        },
+
+        {
+          path: 'Services',
+          element: <ServicePage />
         }
         ,
         {
           path: 'users',
-          element: <Users/>
+          element: <Users />
         }
       ]
     }

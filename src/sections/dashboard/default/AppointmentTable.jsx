@@ -100,6 +100,7 @@ const headCells = [
 ];
 
 export default function AppointmentTable({ bookings, onViewDetails, onApprove, onCancel }) {
+  console.log("bookingswww",bookings)
   return (
     <Box>
       <TableContainer
@@ -125,7 +126,7 @@ export default function AppointmentTable({ bookings, onViewDetails, onApprove, o
           <TableBody>
             {bookings && bookings.length > 0 ? (
               bookings
-                .filter((booking) => booking.type === 'consultation')
+                .filter((booking) => booking.type === 'Consultation')
                 .map((booking, index) => (
                   <TableRow
                     hover
