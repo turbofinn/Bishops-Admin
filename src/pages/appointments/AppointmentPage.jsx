@@ -87,20 +87,23 @@ export default function AppointmentPage() {
 
       if (data && Array.isArray(data.bookings)) {
         const transformedBookings = data.bookings.map((booking) => ({
-          bookingId: booking.bookingID,
-          name: booking.userName || 'N/A',
-          phoneNumber: booking.mobileNo || 'N/A',
-          vaccinesIDs: booking.vaccinationList || '',
-          bookingDate: booking.date || formattedDate,
-          slot: booking.slot || '',
-          meridiem: booking.meridiem || 'AM',
-          paymentMethod: booking.paymentMethod || 'N/A',
-          status: booking.status || 'Booked',
-          userID: booking.userID || '',
-          pharmacyNo: booking.consultantID || pharmacyNo,
-          type: booking.type || '',
-          consultationType: booking.consultationType || ''
-        }));
+  bookingId: booking.bookingID,
+  name: booking.userName || 'N/A',
+  phoneNumber: booking.mobileNo || 'N/A',
+  vaccinesIDs: booking.vaccinationList || '',
+  bookingDate: booking.date || formattedDate,
+  slot: booking.slot || '',
+  meridiem: booking.meridiem || 'AM',
+  paymentMethod: booking.paymentMethod || 'N/A',
+  paymentAmount: booking.paymentAmount || 'N/A',
+  status: booking.status || 'Booked',
+  userID: booking.userID || '',
+  pharmacyNo: booking.consultantID || pharmacyNo,
+  type: booking.type || '',
+  consultationType: booking.consultationType || booking.consultationType || '',
+  isConsultation: booking.type === 'consultation' || false,
+  consultationDetails: booking.consultationDetails || null
+}));
         setBookings(transformedBookings);
       } else if (data?.responseStatus?.code === 1001) {
         setBookings([]);
@@ -271,78 +274,102 @@ export default function AppointmentPage() {
         <DialogTitle id="booking-details-dialog-title">
           Booking Details
         </DialogTitle>
-        <DialogContent>
-          {detailsDialog.booking && (
-            <Box sx={{ pt: 1 }}>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <Paper variant="outlined" sx={{ p: 2 }}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="subtitle2">Booking ID</Typography>
-                        <Typography variant="body2">{detailsDialog.booking.bookingId}</Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="subtitle2">Status</Typography>
-                        <Typography variant="body2">{detailsDialog.booking.status || 'Booked'}</Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="subtitle2">Appointment Date</Typography>
-                        <Typography variant="body2">{detailsDialog.booking.bookingDate}</Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="subtitle2">Time Slot</Typography>
-                        <Typography variant="body2">{detailsDialog.booking.slot} {detailsDialog.booking.meridiem}</Typography>
-                      </Grid>
-                    </Grid>
-                  </Paper>
-                </Grid>
-                
-                <Grid item xs={12}>
-                  <Divider sx={{ my: 1 }} />
-                  <Typography variant="h6" sx={{ mb: 1 }}>Patient Information</Typography>
-                  <Paper variant="outlined" sx={{ p: 2 }}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="subtitle2">Patient Name</Typography>
-                        <Typography variant="body2">{detailsDialog.booking.name}</Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="subtitle2">Phone Number</Typography>
-                        <Typography variant="body2">{detailsDialog.booking.phoneNumber}</Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="subtitle2">User ID</Typography>
-                        <Typography variant="body2">{detailsDialog.booking.userID}</Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="subtitle2">Payment Method</Typography>
-                        <Typography variant="body2">{detailsDialog.booking.paymentMethod}</Typography>
-                      </Grid>
-                    </Grid>
-                  </Paper>
-                </Grid>
-                
-                <Grid item xs={12}>
-                  <Divider sx={{ my: 1 }} />
-                  <Typography variant="h6" sx={{ mb: 1 }}>Vaccine Information</Typography>
-                  <Paper variant="outlined" sx={{ p: 2 }}>
-                    <Typography variant="subtitle2">Selected Vaccines</Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
-                      {detailsDialog.booking.vaccinesIDs?.split(',').map((vaccine, i) => (
-                        <Chip 
-                          key={i} 
-                          label={vaccine.trim()} 
-                          color="primary" 
-                        />
-                      ))}
-                    </Box>
-                  </Paper>
-                </Grid>
-              </Grid>
-            </Box>
-          )}
-        </DialogContent>
+     <DialogContent>
+  {detailsDialog.booking && (
+    <Box sx={{ pt: 1 }}>
+      {/* Booking Details Section */}
+     
+
+      {/* Patient Information Section */}
+      <Typography variant="h6" sx={{ mb: 1 }}>Patient Information</Typography>
+      <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Typography variant="subtitle1" fontWeight="bold">Patient Name</Typography>
+            <Typography variant="body1">{detailsDialog.booking.name || 'N/A'}</Typography>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Typography variant="subtitle1" fontWeight="bold">User ID</Typography>
+            <Typography variant="body1">{detailsDialog.booking.userID || 'N/A'}</Typography>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Typography variant="subtitle1" fontWeight="bold">Phone Number</Typography>
+            <Typography variant="body1">{detailsDialog.booking.phoneNumber || 'N/A'}</Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="subtitle1" fontWeight="bold">Payment Method</Typography>
+            <Typography variant="body1">{detailsDialog.booking.paymentMethod || 'N/A'}</Typography>
+          </Grid>
+        </Grid>
+      </Paper>
+
+     
+      {/* Booking Type Section */}
+      <Typography variant="h6" sx={{ mb: 1 }}>Appointment Type</Typography>
+      <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Typography variant="subtitle1" fontWeight="bold">
+              {detailsDialog.booking.isConsultation ? 'Consultation' : 'Vaccination'}
+            </Typography>
+            {detailsDialog.booking.isConsultation && (
+              <>
+                <Typography variant="subtitle1" fontWeight="bold">Consultation Type</Typography>
+                <Typography variant="body1">
+                  {detailsDialog.booking.consultationType || 'N/A'}
+                </Typography>
+                {detailsDialog.booking.consultationDetails && (
+                  <>
+                    <Typography variant="subtitle1" fontWeight="bold">Details</Typography>
+                    <Typography variant="body1">
+                      {detailsDialog.booking.consultationDetails}
+                    </Typography>
+                  </>
+                )}
+              </>
+            )}
+          </Grid>
+        </Grid>
+      </Paper>
+
+      {/* Rest of your existing dialog content... */}
+
+
+      {/* Vaccine Information Section */}
+      <Typography variant="h6" sx={{ mb: 1 }}>Vaccine Information</Typography>
+      <Paper variant="outlined" sx={{ p: 2 }}>
+        <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>Selected Vaccines</Typography>
+        {detailsDialog.booking.vaccinesIDs && (
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column',
+            gap: 1 
+          }}>
+            {JSON.parse(detailsDialog.booking.vaccinesIDs).map((vaccine, i) => (
+              <Paper 
+                key={i} 
+                variant="outlined" 
+                sx={{ 
+                  p: 1.5,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}
+              >
+                <Typography>{vaccine.vaccineName}</Typography>
+                <Chip 
+                  label={`Qty: ${vaccine.quantity || 1}`} 
+                  color="primary"
+                  size="small"
+                />
+              </Paper>
+            ))}
+          </Box>
+        )}
+      </Paper>
+    </Box>
+  )}
+</DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDetailsDialog}>Close</Button>
           {detailsDialog.booking && detailsDialog.booking.status !== 'Approved' && detailsDialog.booking.status !== 'Cancelled' && (

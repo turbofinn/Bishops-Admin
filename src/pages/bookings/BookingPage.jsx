@@ -25,6 +25,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Paper from '@mui/material/Paper';
 import Divider from '@mui/material/Divider';
 import Chip from '@mui/material/Chip';
+import IconButton from '@mui/material/IconButton'; // Added this import
+import CloseIcon from '@mui/icons-material/Close'; // Added this import
 
 // project imports
 import MainCard from 'components/MainCard';
@@ -86,20 +88,21 @@ export default function BookingPage() {
       const data = await response.json();
 
       if (data && Array.isArray(data.bookings)) {
-        const transformedBookings = data.bookings.map((booking) => ({
-          bookingId: booking.bookingID,
-          name: booking.userName || 'N/A',
-          phoneNumber: booking.mobileNo || 'N/A',
-          vaccinesIDs: booking.vaccinationList || '',
-          bookingDate: booking.date || formattedDate,
-          slot: booking.slot || '',
-          meridiem: booking.meridiem || 'AM',
-          paymentMethod: booking.paymentMethod || 'N/A',
-          status: booking.status || 'Booked',
-          userID: booking.userID || '',
-          pharmacyNo: booking.consultantID || pharmacyNo,
-          type: booking.type
-        }));
+       const transformedBookings = data.bookings.map((booking) => ({
+  bookingId: booking.bookingID,
+  name: booking.userName || 'N/A',
+  phoneNumber: booking.mobileNo || 'N/A',
+  vaccinesIDs: booking.vaccinationList || '',
+  bookingDate: booking.date || formattedDate,
+  slot: booking.slot || '',
+  meridiem: booking.meridiem || 'AM',
+  paymentMethod: booking.paymentMethod || 'N/A',
+  paymentAmount: booking.paymentAmount || 'N/A', // Add this line
+  status: booking.status || 'Booked',
+  userID: booking.userID || '',
+  pharmacyNo: booking.consultantID || pharmacyNo,
+  type: booking.type
+}));
         setBookings(transformedBookings);
       } else if (data?.responseStatus?.code === 1001) {
         setBookings([]);
@@ -260,98 +263,190 @@ export default function BookingPage() {
           )}
         </MainCard>
       </Grid>
+
       {/* Booking Details Dialog */}
       <Dialog
         open={detailsDialog.open}
         onClose={handleCloseDetailsDialog}
         aria-labelledby="booking-details-dialog-title"
         maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+            minWidth: '800px'
+          }
+        }}
       >
-        <DialogTitle id="booking-details-dialog-title">
+        <DialogTitle 
+          sx={{ 
+            m: 0, 
+            p: 3,
+            bgcolor: 'primary.main', 
+            color: 'white',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            fontSize: '1.5rem'
+          }}
+          id="booking-details-dialog-title"
+        >
           Booking Details
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseDetailsDialog}
+            sx={{ color: 'white' }}
+          >
+            <CloseIcon fontSize="large" />
+          </IconButton>
         </DialogTitle>
-        <DialogContent>
+
+        <DialogContent sx={{ mt: 2, p: 3 }}>
           {detailsDialog.booking && (
-            <Box sx={{ pt: 1 }}>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <Paper variant="outlined" sx={{ p: 2 }}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="subtitle2">Booking ID</Typography>
-                        <Typography variant="body2">{detailsDialog.booking.bookingId}</Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="subtitle2">Status</Typography>
-                        <Typography variant="body2">{detailsDialog.booking.status || 'Booked'}</Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="subtitle2">Appointment Date</Typography>
-                        <Typography variant="body2">{detailsDialog.booking.bookingDate}</Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="subtitle2">Time Slot</Typography>
-                        <Typography variant="body2">{detailsDialog.booking.slot} {detailsDialog.booking.meridiem}</Typography>
-                      </Grid>
+            <Grid container spacing={3}>
+              {/* Patient Information Section */}
+              <Grid item xs={12}>
+                <Typography variant="h6" sx={{ mb: 2, color: 'primary.main', fontWeight: 'bold' }}>
+                  Patient Information
+                </Typography>
+                <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="subtitle1" fontWeight="bold">Patient Name</Typography>
+                      <Typography variant="body1">{detailsDialog.booking.name || 'N/A'}</Typography>
                     </Grid>
-                  </Paper>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <Divider sx={{ my: 1 }} />
-                  <Typography variant="h6" sx={{ mb: 1 }}>Patient Information</Typography>
-                  <Paper variant="outlined" sx={{ p: 2 }}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="subtitle2">Patient Name</Typography>
-                        <Typography variant="body2">{detailsDialog.booking.name}</Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="subtitle2">Phone Number</Typography>
-                        <Typography variant="body2">{detailsDialog.booking.phoneNumber}</Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="subtitle2">User ID</Typography>
-                        <Typography variant="body2">{detailsDialog.booking.userID}</Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="subtitle2">Payment Method</Typography>
-                        <Typography variant="body2">{detailsDialog.booking.paymentMethod}</Typography>
-                      </Grid>
+                    
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="subtitle1" fontWeight="bold">Phone Number</Typography>
+                      <Typography variant="body1">{detailsDialog.booking.phoneNumber || 'N/A'}</Typography>
                     </Grid>
-                  </Paper>
-                </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="subtitle1" fontWeight="bold">Appointment Date</Typography>
+                      <Typography variant="body1">{detailsDialog.booking.bookingDate}</Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="subtitle1" fontWeight="bold">Time Slot</Typography>
+                      <Typography variant="body1">
+                        {detailsDialog.booking.slot} {detailsDialog.booking.meridiem || ''}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="subtitle1" fontWeight="bold">Booking Type</Typography>
+                      <Typography variant="body1">
+                        {detailsDialog.booking.type || 'N/A'}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              </Grid>
 
-                <Grid item xs={12}>
-                  <Divider sx={{ my: 1 }} />
-                  <Typography variant="h6" sx={{ mb: 1 }}>Vaccine Information</Typography>
-                  <Paper variant="outlined" sx={{ p: 2 }}>
-                    <Typography variant="subtitle2">Selected Vaccines</Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
-                      {detailsDialog.booking.vaccinesIDs?.split(',').map((vaccine, i) => (
-                        <Chip
-                          key={i}
-                          label={vaccine.trim()}
-                          color="primary"
+              {/* Payment Details Section */}
+              <Grid item xs={12}>
+                <Typography variant="h6" sx={{ mb: 2, color: 'primary.main', fontWeight: 'bold' }}>
+                  Payment Details
+                </Typography>
+                <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="subtitle1" fontWeight="bold">Booking ID</Typography>
+                      <Typography variant="body1">{detailsDialog.booking.bookingId}</Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="subtitle1" fontWeight="bold">Payment Amount</Typography>
+                      <Typography variant="body1">{detailsDialog.booking.paymentAmount || 'N/A'}</Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="subtitle1" fontWeight="bold">Status</Typography>
+                      <Typography variant="body1">
+                        <Chip 
+                          label={detailsDialog.booking.status || 'Booked'} 
+                          color={
+                            detailsDialog.booking.status === 'Approved' ? 'success' : 
+                            detailsDialog.booking.status === 'Cancelled' ? 'error' : 'primary'
+                          }
+                          size="small"
                         />
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="subtitle1" fontWeight="bold">Payment Method</Typography>
+                      <Typography variant="body1">{detailsDialog.booking.paymentMethod || 'N/A'}</Typography>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              </Grid>
+
+              {/* Vaccine Information Section */}
+              <Grid item xs={12}>
+                <Typography variant="h6" sx={{ mb: 2, color: 'primary.main', fontWeight: 'bold' }}>
+                  Vaccine Information
+                </Typography>
+                <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
+                  <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 2 }}>
+                    Selected Vaccines
+                  </Typography>
+                  {detailsDialog.booking.vaccinesIDs && (
+                    <Box sx={{ 
+                      display: 'flex', 
+                      flexDirection: 'column',
+                      gap: 2 
+                    }}>
+                      {JSON.parse(detailsDialog.booking.vaccinesIDs).map((vaccine, i) => (
+                        <Paper 
+                          key={i} 
+                          variant="outlined" 
+                          sx={{ 
+                            p: 2,
+                            borderRadius: 2,
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            bgcolor: 'background.paper'
+                          }}
+                        >
+                          <Typography variant="body1" fontWeight="medium">
+                            {vaccine.vaccineName}
+                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <Chip 
+                              label={`Qty: ${vaccine.quantity || 1}`} 
+                              color="primary"
+                              size="small"
+                              variant="outlined"
+                            />
+                           
+                          </Box>
+                        </Paper>
                       ))}
                     </Box>
-                  </Paper>
-                </Grid>
+                  )}
+                </Paper>
               </Grid>
-            </Box>
+            </Grid>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDetailsDialog}>Close</Button>
+
+        <DialogActions sx={{ px: 4, pb: 4, pt: 2 }}>
+          <Button 
+            onClick={handleCloseDetailsDialog} 
+            color="secondary" 
+            variant="outlined"
+            size="large"
+            sx={{ minWidth: '120px' }}
+          >
+            Close
+          </Button>
           {detailsDialog.booking && detailsDialog.booking.status !== 'Approved' && detailsDialog.booking.status !== 'Cancelled' && (
             <Button
               onClick={() => {
                 handleCloseDetailsDialog();
                 handleApproveBooking(detailsDialog.booking);
               }}
-              color="success"
+              color="primary"
               variant="contained"
+              size="large"
+              sx={{ minWidth: '120px' }}
             >
               Approve
             </Button>
@@ -364,6 +459,8 @@ export default function BookingPage() {
               }}
               color="error"
               variant="contained"
+              size="large"
+              sx={{ minWidth: '120px' }}
             >
               Cancel
             </Button>

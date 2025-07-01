@@ -141,13 +141,36 @@ export default function BookingTable({ bookings, onViewDetails, onApprove, onCan
                     <TableCell>
                       <Typography variant="body2">{booking.phoneNumber || 'N/A'}</Typography>
                     </TableCell>
-                    <TableCell>
+                    {/*<TableCell>
                       <Stack direction="row" spacing={1}>
                         {booking.vaccinesIDs?.split(',').map((vaccine, i) => (
                           <Chip key={i} label={vaccine.trim()} size="small" color="primary" variant="outlined" />
                         ))}
                       </Stack>
-                    </TableCell>
+                    </TableCell>*/}
+                     <TableCell>
+  <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 0.5 }}>
+    {booking.vaccinesIDs?.split(',').map((vaccine, i) => {
+      // Remove JSON syntax and extract just the vaccine name
+      const cleanVaccine = vaccine
+        .replace(/[{}"[\]]/g, '')  // Remove curly braces, quotes, and square brackets
+        .replace(/vaccineName:/g, '')  // Remove "vaccineName:" text
+        .replace(/quantity:\d+/g, '')  // Remove quantity with any number
+        .trim();
+      
+      return cleanVaccine ? (
+        <Chip 
+          key={i} 
+          label={cleanVaccine} 
+          size="small" 
+          sx={{ color: 'black', backgroundColor: 'transparent', border: 'none' }} 
+        />
+      ) : null;
+    })}
+  </Stack>
+</TableCell>
+               
+    
                     <TableCell>
                       <Typography variant="body2">
                         {booking.slot} {booking.meridiem}
