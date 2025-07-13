@@ -99,7 +99,7 @@ const headCells = [
   }
 ];
 
-export default function BookingTable({ bookings, onViewDetails, onApprove, onCancel }) {
+export default function BookingTable({ bookings, onViewDetails, onApprove, onCancel,onMarkPaid }) {
   console.log("booookkkk", bookings)
   return (
     <Box>
@@ -178,8 +178,8 @@ export default function BookingTable({ bookings, onViewDetails, onApprove, onCan
                     </TableCell>
                     <TableCell>
                       <Chip
-                        label={booking.paymentMethod || 'N/A'}
-                        color={booking.paymentMethod === 'CARD' ? 'success' : 'primary'}
+                        label={booking.paymentStatus || 'N/A'}
+                        color={booking.paymentStatus === 'Paid' ? 'success' : 'primary'}
                         size="small"
                       />
                     </TableCell>
