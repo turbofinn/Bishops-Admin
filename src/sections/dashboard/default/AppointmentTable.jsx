@@ -503,7 +503,7 @@ AppointmentTable.propTypes = {
 };*/
 
 
-import PropTypes from 'prop-types';
+/*import PropTypes from 'prop-types';
 import { useState } from 'react';
 
 // material-ui imports
@@ -537,14 +537,11 @@ function BookingStatus({ status }) {
     case 'Booked':
       color = 'primary';
       break;
-    case 'Approved':
+    case 'Accepted':
       color = 'success';
       break;
     case 'Cancelled':
       color = 'error';
-      break;
-    case 'Completed':
-      color = 'info';
       break;
     default:
       color = 'warning';
@@ -847,6 +844,305 @@ export default function AppointmentTable({ bookings, onViewDetails, onApprove, o
                 <TableCell colSpan={7} align="center">
                   <Typography variant="body1" sx={{ py: 2, color: 'text.secondary' }}>
                     No consultation bookings found for the selected date.
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
+  );
+}
+
+BookingStatus.propTypes = {
+  status: PropTypes.string
+};
+
+PaymentStatus.propTypes = {
+  status: PropTypes.oneOf(['Paid', 'Pending', 'Failed', 'Refunded'])
+};
+
+ConsultationType.propTypes = {
+  type: PropTypes.string
+};
+
+AppointmentTable.propTypes = {
+  bookings: PropTypes.array,
+  onViewDetails: PropTypes.func,
+  onApprove: PropTypes.func,
+  onCancel: PropTypes.func
+};*/
+
+
+import PropTypes from 'prop-types';
+import { useState } from 'react';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CancelIcon from '@mui/icons-material/Cancel';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import Dot from 'components/@extended/Dot';
+
+function BookingStatus({ status }) {
+  let color;
+  let title = status;
+
+  switch (status) {
+    case 'Booked': color = 'primary'; break;
+    case 'Accepted': color = 'success'; break;
+    case 'Cancelled': color = 'error'; break;
+    case 'Completed': color = 'info'; break;
+    default: color = 'warning';
+  }
+
+  return (
+    <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
+      <Dot color={color} />
+      <Typography>{title}</Typography>
+    </Stack>
+  );
+}
+
+function PaymentStatus({ status }) {
+  let color;
+  let title = status;
+
+  switch (status) {
+    case 'Paid': color = 'success'; break;
+    case 'Pending': color = 'warning'; break;
+    case 'Failed': color = 'error'; break;
+    case 'Refunded': color = 'info'; break;
+    default: color = 'primary';
+  }
+
+  return (
+    <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
+      <Dot color={color} />
+      <Typography>{title}</Typography>
+    </Stack>
+  );
+}
+
+function ConsultationType({ type }) {
+  let displayType;
+  let color = 'secondary';
+  
+  const lowerType = type?.toLowerCase();
+  
+  if (lowerType?.includes('travel') || lowerType === 'travel clinic') {
+    displayType = 'Travel Clinic';
+    color = 'primary';
+  } else if (lowerType?.includes('ear') || lowerType === 'ear microsuction') {
+    displayType = 'Ear Microsuction';
+    color = 'info';
+  } else if (lowerType?.includes('weight') || lowerType === 'weight loss') {
+    displayType = 'Weight Loss';
+    color = 'success';
+  } else {
+    displayType = 'General Consultation';
+    color = 'secondary';
+  }
+
+  return (
+    <Chip 
+      label={displayType} 
+      color={color}
+      size="small"
+    />
+  );
+}
+
+const headCells = [
+  {
+    id: 'name',
+    align: 'left',
+    disablePadding: false,
+    label: 'Patient Name'
+  },
+  {
+    id: 'phoneNumber',
+    align: 'left',
+    disablePadding: false,
+    label: 'Phone Number'
+  },
+  {
+    id: 'consultationType',
+    align: 'left',
+    disablePadding: false,
+    label: 'Consultation Type'
+  },
+  {
+    id: 'slot',
+    align: 'left',
+    disablePadding: false,
+    label: 'Time Slot'
+  },
+  {
+    id: 'paymentStatus',
+    align: 'left',
+    disablePadding: false,
+    label: 'Payment Status'
+  },
+  {
+    id: 'status',
+    align: 'left',
+    disablePadding: false,
+    label: 'Status'
+  },
+  {
+    id: 'actions',
+    align: 'center',
+    disablePadding: false,
+    label: 'Actions'
+  }
+];
+
+export default function AppointmentTable({ bookings, onViewDetails, onApprove, onCancel }) {
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const consultationBookings = bookings.filter(booking => 
+    booking.type && (booking.type.toLowerCase() === 'consultation' || 
+                    booking.type.toLowerCase() === 'travel clinic' ||
+                    booking.type.toLowerCase() === 'ear microsuction' ||
+                    booking.type.toLowerCase() === 'weight loss')
+  );
+
+  const handleApprove = async (booking) => {
+    setIsUpdating(true);
+    try {
+      if (onApprove) {
+        await onApprove(booking);
+      }
+    } catch (error) {
+      console.error('Error approving booking:', error);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleCancel = async (booking) => {
+    setIsUpdating(true);
+    try {
+      if (onCancel) {
+        await onCancel(booking);
+      }
+    } catch (error) {
+      console.error('Error cancelling booking:', error);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  return (
+    <Box>
+      <TableContainer
+        sx={{
+          width: '100%',
+          overflowX: 'auto',
+          position: 'relative',
+          display: 'block',
+          maxWidth: '100%',
+          '& td, & th': { whiteSpace: 'nowrap' }
+        }}
+      >
+        <Table aria-labelledby="tableTitle">
+          <TableHead>
+            <TableRow>
+              {headCells.map((headCell) => (
+                <TableCell key={headCell.id} align={headCell.align} padding={headCell.disablePadding ? 'none' : 'normal'}>
+                  {headCell.label}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {consultationBookings.length > 0 ? (
+              consultationBookings.map((booking, index) => (
+                <TableRow
+                  hover
+                  role="checkbox"
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  tabIndex={-1}
+                  key={booking.bookingId || index}
+                >
+                  <TableCell>
+                    <Typography variant="body2">{booking.name || 'N/A'}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2">{booking.phoneNumber || 'N/A'}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <ConsultationType type={booking.consultationType || booking.type} />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2">
+                      {booking.slot} {booking.meridiem}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <PaymentStatus status={booking.paymentStatus || 'Pending'} />
+                  </TableCell>
+                  <TableCell>
+                    <BookingStatus status={booking.status || 'Booked'} />
+                  </TableCell>
+                  <TableCell align="center">
+                    <Stack direction="row" justifyContent="center">
+                      <Tooltip title="View Details">
+                        <IconButton 
+                          onClick={() => onViewDetails(booking)} 
+                          color="primary" 
+                          size="small"
+                          disabled={isUpdating}
+                        >
+                          <VisibilityIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+
+                      {booking.status !== 'Accepted' && booking.status !== 'Cancelled' && (
+                        <Tooltip title="Approve Booking">
+                          <IconButton 
+                            onClick={() => handleApprove(booking)} 
+                            color="success" 
+                            size="small"
+                            disabled={isUpdating}
+                          >
+                            <CheckCircleOutlineIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+
+                      {booking.status !== 'Cancelled' && (
+                        <Tooltip title="Cancel Booking">
+                          <IconButton 
+                            onClick={() => handleCancel(booking)} 
+                            color="error" 
+                            size="small"
+                            disabled={isUpdating}
+                          >
+                            <CancelIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </Stack>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} align="center">
+                  <Typography variant="body1" sx={{ py: 2, color: 'text.secondary' }}>
+                    No consultation bookings found
                   </Typography>
                 </TableCell>
               </TableRow>

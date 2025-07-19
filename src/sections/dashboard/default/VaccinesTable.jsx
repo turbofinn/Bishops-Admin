@@ -194,7 +194,7 @@ export default function VaccinesTable({ vaccines, onEdit, onStatusChange }) {
                 </TableCell>
                 <TableCell align="right">
                   <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                    €{vaccine.price}
+                    £{vaccine.price}
                   </Typography>
                 </TableCell>
                 <TableCell>

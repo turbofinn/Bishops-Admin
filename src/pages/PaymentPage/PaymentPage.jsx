@@ -33,6 +33,7 @@ export default function PaymentPage() {
     const [payments, setPayments] = useState([]);
     const [initialLoading, setInitialLoading] = useState(true);
     const [searchLoading, setSearchLoading] = useState(false);
+    const [confirmLoading, setConfirmLoading] = useState(false);
     const [error, setError] = useState(null);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedStatus, setSelectedStatus] = useState('pending');
@@ -154,7 +155,6 @@ export default function PaymentPage() {
                     status: normalizeStatus(payment.status || payment.paymentStatus || 'pending')
                 }));
                 
-                // Additional client-side filtering for reliability
                 const filteredPayments = paymentsWithMethods.filter(payment => 
                     payment.status.toLowerCase() === selectedStatus.toLowerCase()
                 );
@@ -186,7 +186,7 @@ export default function PaymentPage() {
 
     const handleSearch = () => {
         setSearchLoading(true);
-        setPayments([]); // Clear current payments while loading
+        setPayments([]);
         fetchPayments();
     };
 
@@ -203,13 +203,13 @@ export default function PaymentPage() {
     const confirmAction = async () => {
         const { payment } = confirmDialog;
         try {
-            setSearchLoading(true);
+            setConfirmLoading(true);
             
             const requestBody = {
                 bookingId: payment.bookingId || payment.bookingID,
                 paymentId: payment.paymentId || payment.id,
                 action: "UpdatePayment",
-                status: "paid",
+                status: "Offline",
                 date: formatAPIDate(payment.bookingDate || payment.date || ""),
                 pharmacyNo: pharmacyNo
             };
@@ -248,7 +248,7 @@ export default function PaymentPage() {
                 severity: 'error'
             });
         } finally {
-            setSearchLoading(false);
+            setConfirmLoading(false);
             setConfirmDialog({ ...confirmDialog, open: false });
         }
     };
@@ -346,7 +346,7 @@ export default function PaymentPage() {
                     {confirmDialog.payment && (
                         <Box sx={{ mt: 2 }}>
                             <Typography variant="body2"><strong>Patient:</strong> {confirmDialog.payment.userName}</Typography>
-                            <Typography variant="body2"><strong>Amount:</strong> £{confirmDialog.payment.amount}</Typography>
+                            <Typography variant="body2"><strong>Amount:</strong> £{confirmDialog.payment.paymentAmount}</Typography>
                             {confirmDialog.payment.bookingId && (
                                 <Typography variant="body2"><strong>Booking ID:</strong> {confirmDialog.payment.bookingId}</Typography>
                             )}
@@ -354,17 +354,17 @@ export default function PaymentPage() {
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseConfirmDialog} disabled={searchLoading}>
+                    <Button onClick={handleCloseConfirmDialog} disabled={confirmLoading}>
                         Cancel
                     </Button>
                     <Button 
                         onClick={confirmAction} 
                         color="primary" 
                         variant="contained"
-                        disabled={searchLoading}
-                        startIcon={searchLoading ? <CircularProgress size={20} /> : null}
+                        disabled={confirmLoading}
+                        startIcon={confirmLoading ? <CircularProgress size={20} /> : null}
                     >
-                        {searchLoading ? 'Processing...' : 'Confirm'}
+                        {confirmLoading ? 'Processing...' : 'Confirm'}
                     </Button>
                 </DialogActions>
             </Dialog>

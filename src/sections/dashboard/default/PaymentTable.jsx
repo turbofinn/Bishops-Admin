@@ -15,7 +15,6 @@ import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
-import CircularProgress from '@mui/material/CircularProgress';
 
 // icons
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
@@ -70,7 +69,6 @@ const headCells = [
 
 export default function PaymentTable({ payments, onConfirmPayment, PaymentStatus }) {
   const [error, setError] = useState(null);
-  const [loadingPaymentId, setLoadingPaymentId] = useState(null);
 
   const renderPaymentMethod = (payment) => {
     return (
@@ -90,7 +88,6 @@ export default function PaymentTable({ payments, onConfirmPayment, PaymentStatus
   };
 
   const handleConfirm = (payment) => {
-    setLoadingPaymentId(payment.paymentId || payment.id);
     onConfirmPayment(payment);
   };
 
@@ -176,7 +173,7 @@ export default function PaymentTable({ payments, onConfirmPayment, PaymentStatus
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2">
-                      ₹{getPaymentAmount(payment)}
+                      £{getPaymentAmount(payment)}
                     </Typography>
                   </TableCell>
                   <TableCell>
@@ -199,13 +196,8 @@ export default function PaymentTable({ payments, onConfirmPayment, PaymentStatus
                             onClick={() => handleConfirm(payment)} 
                             color="success" 
                             size="small"
-                            disabled={loadingPaymentId === (payment.paymentId || payment.id || payment._id)}
                           >
-                            {loadingPaymentId === (payment.paymentId || payment.id || payment._id) ? (
-                              <CircularProgress size={20} />
-                            ) : (
-                              <CheckCircleOutlineIcon fontSize="small" />
-                            )}
+                            <CheckCircleOutlineIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
                       )}
