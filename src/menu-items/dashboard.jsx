@@ -17,14 +17,14 @@ const dashboard = {
   title: 'Navigation',
   type: 'group',
   children: [
-    {
+   /* {
       id: 'dashboard',
       title: 'Dashboard',
       type: 'item',
       url: '/dashboard/default',
       icon: icons.DashboardOutlined,
       breadcrumbs: false
-    },
+    },*/
     {
       id: 'vaccines',
       title: 'Vaccines',

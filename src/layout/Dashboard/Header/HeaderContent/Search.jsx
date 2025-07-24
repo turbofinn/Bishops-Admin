@@ -67,7 +67,7 @@ export default function Search({ onSearch }) {
   );
 }*/
 
-/*import FormControl from '@mui/material/FormControl';
+import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Box from '@mui/material/Box';
@@ -100,5 +100,5 @@ export default function Search({ onSearch }) {
       </FormControl>
     </Box>
   );
-}*/
+}
 

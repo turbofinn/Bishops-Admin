@@ -8,7 +8,7 @@ import PaymentPage from '../pages/PaymentPage/PaymentPage';
 import ServicePage from '../pages/Services/ServicePage';
 
 // render- Dashboard
-const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/default')));
+//const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/default')));
 const VaccinePage = Loadable(lazy(() => import('pages/vaccines/VaccinePage')));
 const BookingPage = Loadable(lazy(() => import('pages/bookings/BookingPage')));
 const AppointmentPage = Loadable(lazy(() => import('pages/appointments/AppointmentPage')));
@@ -22,14 +22,14 @@ const MainRoutes = {
   children: [
     {
       path: '/',
-      element: <DashboardDefault />
+      element: <BookingPage />
     },
     {
       path: 'dashboard',
       children: [
         {
           path: 'default',
-          element: <DashboardDefault />
+          element: <BookingPage />
         }
         ,
         {
