@@ -29,7 +29,7 @@ const MainRoutes = {
       children: [
         {
           path: 'default',
-          element: <BookingPage />
+          element: <VaccinePage />
         }
         ,
         {

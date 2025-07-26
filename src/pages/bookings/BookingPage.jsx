@@ -227,12 +227,84 @@ export default function BookingPage() {
       open: true,
       title: 'Approve Payment',
       content: `Are you sure you want to approve payment for ${booking.name}? This will mark the payment as paid.`,
-      action: 'updatePayment',
+      action: 'approve-payment',
       booking
     });
   };
 
-  const confirmAction = async () => {
+  /*const confirmAction = async () => {
+  const { action, booking } = confirmDialog;
+  try {
+    setConfirmLoading(true);
+    
+    const requestBody = {
+      bookingId: booking.bookingId,
+      paymentId: booking.paymentId || '',
+      action: action === 'approve-payment' ? 'UpdatePayment' : 'UpdateBooking',
+      status: action === 'approve' ? 'Accepted' : 
+              action === 'cancel' ? 'Cancelled' : 
+              'Offline',
+      date: formatAPIDate(selectedDate),
+    };
+
+    const response = await fetch(
+      'https://7n0wver1gl.execute-api.eu-west-2.amazonaws.com/dev/update-booking',
+      {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('bishops-token')}` 
+        },
+        body: JSON.stringify(requestBody)
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.response || (data.response.code !== 1000 && data.response.code !== 1001)) {
+      throw new Error(data.response?.message || 'Failed to update booking');
+    }
+
+    // Optimistic update
+    const updatedBookings = bookings.map(b => 
+      b.bookingId === booking.bookingId
+        ? { 
+            ...b, 
+            status: action === 'cancel' ? 'Cancelled' : 
+                   action === 'approve' ? 'Accepted' : b.status,
+            paymentStatus: action === 'approve-payment' ? 'Paid' : b.paymentStatus
+          }
+        : b
+    );
+    setBookings(updatedBookings);
+
+    setSnackbar({
+      open: true,
+      message: data.response.message || 
+              (action === 'approve-payment' ? 'Payment approved successfully' :
+               action === 'approve' ? 'Booking accepted successfully' :
+               'Booking cancelled successfully'),
+      severity: 'success'
+    });
+
+    // Refresh data
+    await fetchBookings();
+
+  } catch (error) {
+    console.error('Update error:', error);
+    setSnackbar({
+      open: true,
+      message: `Operation failed: ${error.message}`,
+      severity: 'error'
+    });
+  } finally {
+    setConfirmLoading(false);
+    setConfirmDialog({ ...confirmDialog, open: false });
+    setDetailsDialog({ ...detailsDialog, open: false });
+  }
+};*/
+
+const confirmAction = async () => {
   const { action, booking } = confirmDialog;
   try {
     setConfirmLoading(true);
@@ -303,6 +375,7 @@ export default function BookingPage() {
     setDetailsDialog({ ...detailsDialog, open: false });
   }
 };
+
 
   const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false });
   const handleCloseDetailsDialog = () => setDetailsDialog({ ...detailsDialog, open: false });
