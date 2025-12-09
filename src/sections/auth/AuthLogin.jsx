@@ -55,7 +55,7 @@ export default function AuthLogin() {
       localStorage.setItem('user', JSON.stringify({ mobileNo: values.mobileNo }));
       localStorage.setItem('bishops-token', response.data?.tokenPair?.accessToken);
       localStorage.setItem('bishops-refersh-token', response.data?.tokenPair?.refreshToken);
-      navigate('/dashboard/vaccines');
+      navigate('/dashboard/appointments');
     } catch (err) {
       console.error(err);
       setError('Invalid OTP');

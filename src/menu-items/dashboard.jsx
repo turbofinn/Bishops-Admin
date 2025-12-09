@@ -18,35 +18,28 @@ const dashboard = {
   type: 'group',
   children: [
     {
-      id: 'dashboard',
-      title: 'Dashboard',
+      id: 'appointments',
+      title: 'Appointments',
       type: 'item',
-      url: '/dashboard/default',
-      icon: icons.DashboardOutlined,
+      url: '/dashboard/appointments',
+      icon: icons.ScheduleOutlined,
       breadcrumbs: false
     },
     {
       id: 'vaccines',
-      title: 'Vaccines',
+      title: 'Vaccine list',
       type: 'item',
       url: '/dashboard/vaccines',
       icon: icons.MedicineBoxOutlined,
       breadcrumbs: false
     },
+
     {
       id: 'booking',
       title: 'Vaccine Bookings',
       type: 'item',
       url: '/dashboard/vaccine-bookings',
       icon: icons.ContactsOutlined,
-      breadcrumbs: false
-    },
-    {
-      id: 'appointments',
-      title: 'Appointments',
-      type: 'item',
-      url: '/dashboard/appointments',
-      icon: icons.ScheduleOutlined,
       breadcrumbs: false
     },
     {

@@ -1,6 +1,6 @@
+/* eslint-disable prettier/prettier */
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -13,27 +13,12 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Switch from '@mui/material/Switch';
 import EditIcon from '@mui/icons-material/Edit';
-import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 
 // project imports
 import Dot from 'components/@extended/Dot';
 
-const FALLBACK_IMAGES = [
-  '/assets/bv2.webp',
-  '/assets/bv3.webp',
-  '/assets/bv4.webp',
-  '/assets/bv5.webp',
-  '/assets/bv6.webp'
-];
-
 const headCells = [
-  {
-    id: 'image',
-    align: 'left',
-    disablePadding: false,
-    label: 'Image'
-  },
   {
     id: 'name',
     align: 'left',
@@ -41,16 +26,10 @@ const headCells = [
     label: 'Vaccine Name'
   },
   {
-    id: 'compositions',
+    id: 'category',
     align: 'left',
     disablePadding: false,
-    label: 'Compositions'
-  },
-  {
-    id: 'description',
-    align: 'left',
-    disablePadding: false,
-    label: 'Description'
+    label: 'Category'
   },
   {
     id: 'price',
@@ -99,26 +78,10 @@ function VaccineStatus({ status }) {
 }
 
 export default function VaccinesTable({ vaccines, onEdit, onStatusChange }) {
-  const [imageErrorMap, setImageErrorMap] = useState({});
-
   const handleEdit = (vaccine) => {
     if (onEdit) {
       onEdit(vaccine);
     }
-  };
-
-  const handleImageError = (vaccineName, index) => {
-    setImageErrorMap(prev => ({
-      ...prev,
-      [vaccineName]: FALLBACK_IMAGES[index % FALLBACK_IMAGES.length]
-    }));
-  };
-
-  const getImageSource = (vaccine, index) => {
-    if (imageErrorMap[vaccine.name]) {
-      return imageErrorMap[vaccine.name];
-    }
-    return vaccine.pictureUrl || FALLBACK_IMAGES[index % FALLBACK_IMAGES.length];
   };
 
   return (
@@ -137,11 +100,7 @@ export default function VaccinesTable({ vaccines, onEdit, onStatusChange }) {
           <TableHead>
             <TableRow>
               {headCells.map((headCell) => (
-                <TableCell
-                  key={headCell.id}
-                  align={headCell.align}
-                  padding={headCell.disablePadding ? 'none' : 'normal'}
-                >
+                <TableCell key={headCell.id} align={headCell.align} padding={headCell.disablePadding ? 'none' : 'normal'}>
                   {headCell.label}
                 </TableCell>
               ))}
@@ -157,40 +116,12 @@ export default function VaccinesTable({ vaccines, onEdit, onStatusChange }) {
                 key={vaccine.vaccineID || index}
               >
                 <TableCell>
-                  <Avatar
-                    alt={vaccine.name}
-                    src={vaccine.pictureUrl}
-                    sx={{
-                      width: 56,
-                      height: 56,
-                      border: '1px solid #f0f0f0',
-                      backgroundColor: '#ffffff'
-                    }}
-                    variant="rounded"
-                    imgProps={{
-                      onError: () => handleImageError(vaccine.name, index)
-                    }}
-                  />
-
-                </TableCell>
-                <TableCell>
                   <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
                     {vaccine.name}
                   </Typography>
                 </TableCell>
-                <TableCell>{vaccine.compositions}</TableCell>
-                <TableCell sx={{ maxWidth: '300px' }}>
-                  <Typography
-                    sx={{
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical'
-                    }}
-                  >
-                    {vaccine.description}
-                  </Typography>
+                <TableCell>
+                  <Typography variant="body2">{vaccine.category || 'N/A'}</Typography>
                 </TableCell>
                 <TableCell align="right">
                   <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
@@ -202,12 +133,7 @@ export default function VaccinesTable({ vaccines, onEdit, onStatusChange }) {
                 </TableCell>
                 <TableCell align="center">
                   <Tooltip title="Edit Vaccine">
-                    <IconButton
-                      aria-label="edit"
-                      onClick={() => handleEdit(vaccine)}
-                      color="primary"
-                      sx={{ mx: 0.5 }}
-                    >
+                    <IconButton aria-label="edit" onClick={() => handleEdit(vaccine)} color="primary" sx={{ mx: 0.5 }}>
                       <EditIcon />
                     </IconButton>
                   </Tooltip>
