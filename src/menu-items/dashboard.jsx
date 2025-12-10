@@ -14,14 +14,14 @@ const icons = {
 
 const dashboard = {
   id: 'group-dashboard',
-  title: 'Navigation',
+  title: '',
   type: 'group',
   children: [
     {
       id: 'appointments',
       title: 'Appointments',
       type: 'item',
-      url: '/dashboard/appointments',
+      url: '/',
       icon: icons.ScheduleOutlined,
       breadcrumbs: false
     },

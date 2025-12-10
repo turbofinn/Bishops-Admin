@@ -3,6 +3,7 @@ import { lazy } from 'react';
 // project imports
 import Loadable from 'components/Loadable';
 import DashboardLayout from 'layout/Dashboard';
+import AuthGuard from 'components/AuthGuard';
 import PaymentTable from '../sections/dashboard/default/PaymentTable';
 import PaymentPage from '../pages/PaymentPage/PaymentPage';
 import ServicePage from '../pages/Services/ServicePage';
@@ -18,11 +19,15 @@ const Users = Loadable(lazy(() => import('pages/users/UserPage')));
 
 const MainRoutes = {
   path: '/',
-  element: <DashboardLayout />,
+  element: (
+    <AuthGuard>
+      <DashboardLayout />
+    </AuthGuard>
+  ),
   children: [
     {
       path: '/',
-      element: <DashboardDefault />
+      element: <AppointmentPage />
     },
     {
       path: 'dashboard',
@@ -30,8 +35,7 @@ const MainRoutes = {
         {
           path: 'default',
           element: <DashboardDefault />
-        }
-        ,
+        },
         {
           path: 'vaccine-bookings',
           element: <BookingPage />
@@ -53,8 +57,7 @@ const MainRoutes = {
         {
           path: 'Services',
           element: <ServicePage />
-        }
-        ,
+        },
         {
           path: 'users',
           element: <Users />

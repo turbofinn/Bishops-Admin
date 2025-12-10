@@ -1,15 +1,19 @@
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import logo from './logo.webp'; // Adjust the path as needed
+import logo from '../../assets/Blogo3.svg'; 
 
 export default function LogoMain() {
   const theme = useTheme();
   return (
     <img
       src={logo}
-      alt="Logo"
-      width="100"
-      style={{ filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none' }}
+      alt="Bishops Pharmacy Logo"
+      style={{
+        width: '100%',
+        height: 'auto',
+        maxWidth: '200px',
+        filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none'
+      }}
     />
   );
 }

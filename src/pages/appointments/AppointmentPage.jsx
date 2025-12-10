@@ -1,7 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { useState, useEffect } from 'react';
 
-// material-ui
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -14,7 +13,6 @@ import MenuItem from '@mui/material/MenuItem';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 import CircularProgress from '@mui/material/CircularProgress';
-import Stack from '@mui/material/Stack';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -24,10 +22,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Paper from '@mui/material/Paper';
-import Divider from '@mui/material/Divider';
 import Chip from '@mui/material/Chip';
 
-// project imports
 import MainCard from 'components/MainCard';
 import AppointmentTable from '../../sections/dashboard/default/AppointmentTable';
 
@@ -37,7 +33,6 @@ export default function AppointmentPage() {
   const [error, setError] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedStatus, setSelectedStatus] = useState('Booked');
-  const [consultantID, setConsultantID] = useState('');
   const [pharmacyNo, setPharmacyNo] = useState('PN1853278176');
 
   const [snackbar, setSnackbar] = useState({
@@ -70,19 +65,19 @@ export default function AppointmentPage() {
       setError(null);
       const formattedDate = formatDate(selectedDate);
 
-      const response = await fetch(
-        'https://7n0wver1gl.execute-api.eu-west-2.amazonaws.com/dev/fetch-bookings-by-date',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            date: formattedDate,
-            ...(selectedStatus && { status: selectedStatus }),
-            ...(consultantID && { consultantID }),
-            pharmacyNo
-          })
-        }
-      );
+      const token = localStorage.getItem('bishops-token');
+      const response = await fetch('https://7n0wver1gl.execute-api.eu-west-2.amazonaws.com/dev/fetch-bookings-by-date', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          date: formattedDate,
+          ...(selectedStatus && { status: selectedStatus }),
+          pharmacyNo
+        })
+      });
 
       const data = await response.json();
 
@@ -117,7 +112,6 @@ export default function AppointmentPage() {
         setBookings([]);
       }
     } catch (err) {
-      console.error('Error fetching bookings:', err);
       setError('Failed to fetch bookings. Please try again.');
       setSnackbar({
         open: true,
@@ -171,28 +165,20 @@ export default function AppointmentPage() {
         date: booking.bookingDate
       };
 
-
-      const response = await fetch(
-        'https://7n0wver1gl.execute-api.eu-west-2.amazonaws.com/dev/update-booking',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('bishops-token')}`
-          },
-          body: JSON.stringify(payload)
-        }
-      );
+      const response = await fetch('https://7n0wver1gl.execute-api.eu-west-2.amazonaws.com/dev/update-booking', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('bishops-token')}`
+        },
+        body: JSON.stringify(payload)
+      });
 
       const data = await response.json();
 
       if (response.ok && data?.response?.code === 1001) {
         // Update local state only after successful API call
-        const updatedBookings = bookings.map(b =>
-          b.bookingId === booking.bookingId
-            ? { ...b, status: newStatus }
-            : b
-        );
+        const updatedBookings = bookings.map((b) => (b.bookingId === booking.bookingId ? { ...b, status: newStatus } : b));
         setBookings(updatedBookings);
 
         setSnackbar({
@@ -204,7 +190,6 @@ export default function AppointmentPage() {
         throw new Error(data?.response?.message || data?.responseStatus?.message || 'Failed to update booking');
       }
     } catch (err) {
-      console.error(`Error ${action}ing booking:`, err);
       setSnackbar({
         open: true,
         message: `Failed to ${action} booking. Please try again.`,
@@ -253,12 +238,7 @@ export default function AppointmentPage() {
             </Grid>
 
             <Grid item xs={12} md={3}>
-              <Button
-                variant="contained"
-                onClick={fetchBookings}
-                disabled={loading}
-                fullWidth
-              >
+              <Button variant="contained" onClick={fetchBookings} disabled={loading} fullWidth>
                 {loading ? <CircularProgress size={24} /> : 'Search'}
               </Button>
             </Grid>
@@ -272,9 +252,7 @@ export default function AppointmentPage() {
             <Typography variant="h5">Appointment Bookings</Typography>
           </Grid>
           <Grid item>
-            <Typography variant="subtitle2">
-              {formatDate(selectedDate)}
-            </Typography>
+            <Typography variant="subtitle2">{formatDate(selectedDate)}</Typography>
           </Grid>
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>
@@ -297,47 +275,50 @@ export default function AppointmentPage() {
         </MainCard>
       </Grid>
       {/* Booking Details Dialog */}
-      <Dialog
-        open={detailsDialog.open}
-        onClose={handleCloseDetailsDialog}
-        aria-labelledby="booking-details-dialog-title"
-        maxWidth="md"
-      >
-        <DialogTitle id="booking-details-dialog-title">
-          Booking Details
-        </DialogTitle>
+      <Dialog open={detailsDialog.open} onClose={handleCloseDetailsDialog} aria-labelledby="booking-details-dialog-title" maxWidth="md">
+        <DialogTitle id="booking-details-dialog-title">Booking Details</DialogTitle>
         <DialogContent>
           {detailsDialog.booking && (
             <Box sx={{ pt: 1 }}>
               {/* Booking Details Section */}
 
-
               {/* Patient Information Section */}
-              <Typography variant="h6" sx={{ mb: 1 }}>Patient Information</Typography>
+              <Typography variant="h6" sx={{ mb: 1 }}>
+                Patient Information
+              </Typography>
               <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
-                    <Typography variant="subtitle1" fontWeight="bold">Patient Name</Typography>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      Patient Name
+                    </Typography>
                     <Typography variant="body1">{detailsDialog.booking.name || 'N/A'}</Typography>
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <Typography variant="subtitle1" fontWeight="bold">User ID</Typography>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      User ID
+                    </Typography>
                     <Typography variant="body1">{detailsDialog.booking.userID || 'N/A'}</Typography>
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <Typography variant="subtitle1" fontWeight="bold">Phone Number</Typography>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      Phone Number
+                    </Typography>
                     <Typography variant="body1">{detailsDialog.booking.phoneNumber || 'N/A'}</Typography>
                   </Grid>
                   <Grid item xs={12}>
-                    <Typography variant="subtitle1" fontWeight="bold">Payment Method</Typography>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      Payment Method
+                    </Typography>
                     <Typography variant="body1">{detailsDialog.booking.paymentMethod || 'N/A'}</Typography>
                   </Grid>
                 </Grid>
               </Paper>
 
-
               {/* Booking Type Section */}
-              <Typography variant="h6" sx={{ mb: 1 }}>Appointment Type</Typography>
+              <Typography variant="h6" sx={{ mb: 1 }}>
+                Appointment Type
+              </Typography>
               <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
@@ -346,16 +327,16 @@ export default function AppointmentPage() {
                     </Typography>
                     {detailsDialog.booking.isConsultation && (
                       <>
-                        <Typography variant="subtitle1" fontWeight="bold">Consultation Type</Typography>
-                        <Typography variant="body1">
-                          {detailsDialog.booking.consultationType || 'N/A'}
+                        <Typography variant="subtitle1" fontWeight="bold">
+                          Consultation Type
                         </Typography>
+                        <Typography variant="body1">{detailsDialog.booking.consultationType || 'N/A'}</Typography>
                         {detailsDialog.booking.consultationDetails && (
                           <>
-                            <Typography variant="subtitle1" fontWeight="bold">Details</Typography>
-                            <Typography variant="body1">
-                              {detailsDialog.booking.consultationDetails}
+                            <Typography variant="subtitle1" fontWeight="bold">
+                              Details
                             </Typography>
+                            <Typography variant="body1">{detailsDialog.booking.consultationDetails}</Typography>
                           </>
                         )}
                       </>
@@ -366,17 +347,22 @@ export default function AppointmentPage() {
 
               {/* Rest of your existing dialog content... */}
 
-
               {/* Vaccine Information Section */}
-              <Typography variant="h6" sx={{ mb: 1 }}>Vaccine Information</Typography>
+              <Typography variant="h6" sx={{ mb: 1 }}>
+                Vaccine Information
+              </Typography>
               <Paper variant="outlined" sx={{ p: 2 }}>
-                <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>Selected Vaccines</Typography>
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
+                  Selected Vaccines
+                </Typography>
                 {detailsDialog.booking.vaccinesIDs && (
-                  <Box sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 1
-                  }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 1
+                    }}
+                  >
                     {JSON.parse(detailsDialog.booking.vaccinesIDs).map((vaccine, i) => (
                       <Paper
                         key={i}
@@ -389,11 +375,7 @@ export default function AppointmentPage() {
                         }}
                       >
                         <Typography>{vaccine.vaccineName}</Typography>
-                        <Chip
-                          label={`Qty: ${vaccine.quantity || 1}`}
-                          color="primary"
-                          size="small"
-                        />
+                        <Chip label={`Qty: ${vaccine.quantity || 1}`} color="primary" size="small" />
                       </Paper>
                     ))}
                   </Box>
@@ -432,27 +414,14 @@ export default function AppointmentPage() {
       </Dialog>
 
       {/* Confirm Action Dialog */}
-      <Dialog
-        open={confirmDialog.open}
-        onClose={handleCloseConfirmDialog}
-        aria-labelledby="confirm-dialog-title"
-      >
-        <DialogTitle id="confirm-dialog-title">
-          {confirmDialog.title}
-        </DialogTitle>
+      <Dialog open={confirmDialog.open} onClose={handleCloseConfirmDialog} aria-labelledby="confirm-dialog-title">
+        <DialogTitle id="confirm-dialog-title">{confirmDialog.title}</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            {confirmDialog.content}
-          </DialogContentText>
+          <DialogContentText>{confirmDialog.content}</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseConfirmDialog}>Cancel</Button>
-          <Button
-            onClick={confirmAction}
-            color={confirmDialog.action === 'approve' ? 'success' : 'error'}
-            variant="contained"
-            autoFocus
-          >
+          <Button onClick={confirmAction} color={confirmDialog.action === 'approve' ? 'success' : 'error'} variant="contained" autoFocus>
             Confirm
           </Button>
         </DialogActions>
@@ -465,11 +434,7 @@ export default function AppointmentPage() {
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
-          sx={{ width: '100%' }}
-        >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
           {snackbar.message}
         </Alert>
       </Snackbar>

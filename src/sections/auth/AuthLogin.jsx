@@ -1,9 +1,18 @@
+/* eslint-disable prettier/prettier */
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Button, FormHelperText, Grid, InputAdornment, InputLabel,
-  OutlinedInput, Stack, Typography, CircularProgress, Snackbar, Alert
+  Button,
+  FormHelperText,
+  Grid,
+  InputAdornment,
+  InputLabel,
+  OutlinedInput,
+  Stack,
+  CircularProgress,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import axios from 'axios';
 import { Formik } from 'formik';
@@ -55,7 +64,7 @@ export default function AuthLogin() {
       localStorage.setItem('user', JSON.stringify({ mobileNo: values.mobileNo }));
       localStorage.setItem('bishops-token', response.data?.tokenPair?.accessToken);
       localStorage.setItem('bishops-refersh-token', response.data?.tokenPair?.refreshToken);
-      navigate('/dashboard/appointments');
+      navigate('/');
     } catch (err) {
       console.error(err);
       setError('Invalid OTP');
@@ -76,7 +85,9 @@ export default function AuthLogin() {
             .matches(/^\d{10}$/, 'Enter a valid 10-digit mobile number')
             .required('Mobile number is required'),
           otp: showOtp
-            ? Yup.string().matches(/^\d{4}$/, 'Enter a valid 4-digit OTP').required('OTP is required')
+            ? Yup.string()
+              .matches(/^\d{4}$/, 'Enter a valid 4-digit OTP')
+              .required('OTP is required')
             : Yup.string()
         })}
         onSubmit={(values, { setSubmitting }) => {
@@ -110,9 +121,7 @@ export default function AuthLogin() {
                     fullWidth
                     error={Boolean(touched.mobileNo && errors.mobileNo)}
                   />
-                  {touched.mobileNo && errors.mobileNo && (
-                    <FormHelperText error>{errors.mobileNo}</FormHelperText>
-                  )}
+                  {touched.mobileNo && errors.mobileNo && <FormHelperText error>{errors.mobileNo}</FormHelperText>}
                 </Stack>
               </Grid>
 
@@ -130,11 +139,7 @@ export default function AuthLogin() {
                       onChange={handleChange}
                       endAdornment={
                         <InputAdornment position="end">
-                          <IconButton
-                            edge="end"
-                            onClick={() => setShowPassword(!showPassword)}
-                            color="secondary"
-                          >
+                          <IconButton edge="end" onClick={() => setShowPassword(!showPassword)} color="secondary">
                             {showPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
                           </IconButton>
                         </InputAdornment>
@@ -142,9 +147,7 @@ export default function AuthLogin() {
                       fullWidth
                       error={Boolean(touched.otp && errors.otp)}
                     />
-                    {touched.otp && errors.otp && (
-                      <FormHelperText error>{errors.otp}</FormHelperText>
-                    )}
+                    {touched.otp && errors.otp && <FormHelperText error>{errors.otp}</FormHelperText>}
                   </Stack>
                 </Grid>
               )}
@@ -160,7 +163,7 @@ export default function AuthLogin() {
                     disabled={loading || isSubmitting}
                     startIcon={loading && <CircularProgress size={20} color="inherit" />}
                   >
-                    {loading ? (showOtp ? 'Verifying...' : 'Sending OTP...') : (showOtp ? 'Verify OTP' : 'Send OTP')}
+                    {loading ? (showOtp ? 'Verifying...' : 'Sending OTP...') : showOtp ? 'Verify OTP' : 'Send OTP'}
                   </Button>
                 </AnimateButton>
               </Grid>

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
@@ -9,24 +10,19 @@ const LogoutButton = ({ variant = 'icon' }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Clear auth data from storage
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('user');
+    localStorage.removeItem('bishops-token');
+    localStorage.removeItem('bishops-refersh-token');
     sessionStorage.removeItem('isLoggedIn');
     sessionStorage.removeItem('user');
-    
-    // Redirect to login page
+
     navigate('/login', { replace: true });
   };
 
   if (variant === 'button') {
     return (
-      <Button
-        variant="outlined"
-        color="error"
-        onClick={handleLogout}
-        startIcon={<LogoutOutlined />}
-      >
+      <Button variant="outlined" color="error" onClick={handleLogout} startIcon={<LogoutOutlined />}>
         Logout
       </Button>
     );
@@ -45,4 +41,4 @@ LogoutButton.propTypes = {
   variant: PropTypes.oneOf(['icon', 'button'])
 };
 
-export default LogoutButton; 
+export default LogoutButton;

@@ -8,7 +8,7 @@ import menuItem from 'menu-items';
 
 // ==============================|| DRAWER CONTENT - NAVIGATION ||============================== //
 
-export default function Navigation() {
+export default function Navigation({ drawerOpen }) {
   const navGroups = menuItem.items.map((item) => {
     switch (item.type) {
       case 'group':
@@ -22,5 +22,5 @@ export default function Navigation() {
     }
   });
 
-  return <Box sx={{ pt: 2 }}>{navGroups}</Box>;
+  return <Box sx={{ pt: drawerOpen ? 4 : 2 }}>{navGroups}</Box>;
 }

@@ -8,12 +8,9 @@ import { useEffect, useState } from 'react';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
-// project imports
 import MainCard from 'components/MainCard';
 import VaccinesTable from 'sections/dashboard/default/VaccinesTable';
 import VaccineFormDialog from 'sections/dashboard/default/VaccineFormDialog';
-
-// ==============================|| VACCINES PAGE ||============================== //
 
 export default function VaccinePage() {
   const [vaccines, setVaccines] = useState([]);
@@ -29,14 +26,15 @@ export default function VaccinePage() {
 
   const PHARMACY_NO = 'PN1853278176';
 
-  // Fetch vaccines from API
   const fetchVaccines = async () => {
     setLoading(true);
     try {
+      const token = localStorage.getItem('bishops-token');
       const response = await fetch('https://7n0wver1gl.execute-api.eu-west-2.amazonaws.com/dev/fetch-all-vaccines', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
           pharmacyNo: PHARMACY_NO
@@ -44,7 +42,6 @@ export default function VaccinePage() {
       });
       const data = await response.json();
       if (data.responseStatus.code === 1001) {
-        // Flatten the vaccineList object into an array and add category information
         const flattenedVaccines = [];
         Object.entries(data.vaccineList).forEach(([category, vaccines]) => {
           vaccines.forEach((vaccine) => {
@@ -63,7 +60,6 @@ export default function VaccinePage() {
         });
       }
     } catch (error) {
-      console.error('Error fetching vaccines:', error);
       setSnackbar({
         open: true,
         message: `Error fetching vaccines: ${error.message}`,
@@ -84,7 +80,6 @@ export default function VaccinePage() {
   };
 
   const handleEditVaccine = (vaccine) => {
-    console.log('Editing vaccine:', vaccine);
     setCurrentVaccine(vaccine);
     setOpenDialog(true);
   };
@@ -100,44 +95,39 @@ export default function VaccinePage() {
   const handleSaveVaccine = async (vaccineData) => {
     setSaving(true);
     try {
-      // Check if we're in edit mode by checking currentVaccine state
       const isEditMode = !!currentVaccine;
       const apiPayload = {
         action: isEditMode ? 'UPDATE' : 'ADD',
         vaccine: {
           name: isEditMode ? currentVaccine.name : vaccineData.name,
           category: vaccineData.category,
-          price: vaccineData.price.toString(), // Ensure price is a string
+          price: vaccineData.price.toString(),
           status: vaccineData.status,
           pharmacyNo: PHARMACY_NO
         }
       };
 
-      // Include additional identifiers if they exist
       if (isEditMode) {
-        // Include vaccineID if it exists
         if (currentVaccine.vaccineID) {
           apiPayload.vaccine.vaccineID = currentVaccine.vaccineID;
         }
 
-        // If the name was changed in the form, include the new name as a separate property
         if (vaccineData.name !== currentVaccine.name) {
           apiPayload.vaccine.newName = vaccineData.name;
         }
       }
 
-      console.log('API Payload:', apiPayload);
-
+      const token = localStorage.getItem('bishops-token');
       const response = await fetch('https://7n0wver1gl.execute-api.eu-west-2.amazonaws.com/dev/manage-vaccine', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(apiPayload)
       });
 
       const data = await response.json();
-      console.log('API Response:', data);
 
       if (data.responseStatus && data.responseStatus.code === 1001) {
         setSnackbar({
@@ -145,12 +135,11 @@ export default function VaccinePage() {
           message: isEditMode ? 'Vaccine updated successfully!' : 'Vaccine added successfully!',
           severity: 'success'
         });
-        fetchVaccines(); // Refresh the vaccines list
+        fetchVaccines();
       } else {
         throw new Error(data.responseStatus?.message || 'Unknown error');
       }
     } catch (error) {
-      console.error('Error saving vaccine:', error);
       setSnackbar({
         open: true,
         message: `Failed to ${currentVaccine ? 'update' : 'add'} vaccine: ${error.message}`,
@@ -174,23 +163,21 @@ export default function VaccinePage() {
         }
       };
 
-      // Include vaccineID if it exists
       if (vaccine.vaccineID) {
         apiPayload.vaccine.vaccineID = vaccine.vaccineID;
       }
 
-      console.log('Status change payload:', apiPayload);
-
+      const token = localStorage.getItem('bishops-token');
       const response = await fetch('https://7n0wver1gl.execute-api.eu-west-2.amazonaws.com/dev/manage-vaccine', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(apiPayload)
       });
 
       const data = await response.json();
-      console.log('Status change response:', data);
 
       if (data.responseStatus && data.responseStatus.code === 1001) {
         setSnackbar({
@@ -203,7 +190,6 @@ export default function VaccinePage() {
         throw new Error(data.responseStatus?.message || 'Unknown error');
       }
     } catch (error) {
-      console.error('Error updating vaccine status:', error);
       setSnackbar({
         open: true,
         message: `Failed to update vaccine status: ${error.message}`,

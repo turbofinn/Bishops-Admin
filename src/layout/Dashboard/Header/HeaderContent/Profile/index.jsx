@@ -1,9 +1,11 @@
+/* eslint-disable prettier/prettier */
 import PropTypes from 'prop-types';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
+import Button from '@mui/material/Button';
 import ButtonBase from '@mui/material/ButtonBase';
 import CardContent from '@mui/material/CardContent';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
@@ -53,8 +55,40 @@ export default function Profile() {
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    localStorage.getItem('isLoggedIn') === 'true' || sessionStorage.getItem('isLoggedIn') === 'true'
+  );
 
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true' || sessionStorage.getItem('isLoggedIn') === 'true';
+  useEffect(() => {
+    const checkAuth = () => {
+      const loggedIn = localStorage.getItem('isLoggedIn') === 'true' || sessionStorage.getItem('isLoggedIn') === 'true';
+      const accessToken = localStorage.getItem('bishops-token');
+
+      if (!loggedIn || !accessToken) {
+        setIsLoggedIn(false);
+        navigate('/login', { replace: true });
+      } else {
+        setIsLoggedIn(loggedIn);
+      }
+    };
+
+    checkAuth();
+
+    const handleStorageChange = (e) => {
+      if (e.key === 'isLoggedIn' || e.key === 'bishops-token') {
+        checkAuth();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    const interval = setInterval(checkAuth, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [navigate]);
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -81,23 +115,7 @@ export default function Profile() {
   };
 
   if (!isLoggedIn) {
-    return (
-      <Stack direction="row" spacing={2}>
-        <Button 
-          variant="outlined" 
-          onClick={() => navigate('/login')}
-          sx={{ color: 'inherit' }}
-        >
-          Login
-        </Button>
-        <Button 
-          variant="contained" 
-          onClick={() => navigate('/register')}
-        >
-          Sign Up
-        </Button>
-      </Stack>
-    );
+    return null; // AuthGuard will handle redirection
   }
 
   return (
