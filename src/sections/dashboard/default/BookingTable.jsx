@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 
@@ -32,8 +33,10 @@ function BookingStatus({ status }) {
     case 'Booked':
       color = 'primary';
       break;
+    case 'Accepted':
     case 'Approved':
       color = 'success';
+      title = 'Approved';
       break;
     case 'Cancelled':
       color = 'error';
@@ -99,8 +102,8 @@ const headCells = [
   }
 ];
 
-export default function BookingTable({ bookings, onViewDetails, onApprove, onCancel,onMarkPaid }) {
-  console.log("booookkkk", bookings)
+export default function BookingTable({ bookings, onViewDetails, onApprove, onCancel, onMarkPaid }) {
+  console.log('booookkkk', bookings);
   return (
     <Box>
       <TableContainer
@@ -148,29 +151,28 @@ export default function BookingTable({ bookings, onViewDetails, onApprove, onCan
                         ))}
                       </Stack>
                     </TableCell>*/}
-                     <TableCell>
-  <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 0.5 }}>
-    {booking.vaccinesIDs?.split(',').map((vaccine, i) => {
-      // Remove JSON syntax and extract just the vaccine name
-      const cleanVaccine = vaccine
-        .replace(/[{}"[\]]/g, '')  // Remove curly braces, quotes, and square brackets
-        .replace(/vaccineName:/g, '')  // Remove "vaccineName:" text
-        .replace(/quantity:\d+/g, '')  // Remove quantity with any number
-        .trim();
-      
-      return cleanVaccine ? (
-        <Chip 
-          key={i} 
-          label={cleanVaccine} 
-          size="small" 
-          sx={{ color: 'black', backgroundColor: 'transparent', border: 'none' }} 
-        />
-      ) : null;
-    })}
-  </Stack>
-</TableCell>
-               
-    
+                    <TableCell>
+                      <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 0.5 }}>
+                        {booking.vaccinesIDs?.split(',').map((vaccine, i) => {
+                          // Remove JSON syntax and extract just the vaccine name
+                          const cleanVaccine = vaccine
+                            .replace(/[{}"[\]]/g, '') // Remove curly braces, quotes, and square brackets
+                            .replace(/vaccineName:/g, '') // Remove "vaccineName:" text
+                            .replace(/quantity:\d+/g, '') // Remove quantity with any number
+                            .trim();
+
+                          return cleanVaccine ? (
+                            <Chip
+                              key={i}
+                              label={cleanVaccine}
+                              size="small"
+                              sx={{ color: 'black', backgroundColor: 'transparent', border: 'none' }}
+                            />
+                          ) : null;
+                        })}
+                      </Stack>
+                    </TableCell>
+
                     <TableCell>
                       <Typography variant="body2">
                         {booking.slot} {booking.meridiem}
@@ -194,7 +196,7 @@ export default function BookingTable({ bookings, onViewDetails, onApprove, onCan
                           </IconButton>
                         </Tooltip>
 
-                        {booking.status !== 'Approved' && booking.status !== 'Cancelled' && (
+                        {booking.status !== 'Accepted' && booking.status !== 'Approved' && booking.status !== 'Cancelled' && (
                           <Tooltip title="Approve Booking">
                             <IconButton aria-label="approve" onClick={() => onApprove(booking)} color="success" size="small">
                               <CheckCircleOutlineIcon fontSize="small" />

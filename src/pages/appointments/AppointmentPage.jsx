@@ -156,7 +156,7 @@ export default function AppointmentPage() {
     try {
       setLoading(true);
 
-      const newStatus = action === 'approve' ? 'Approved' : 'Cancelled';
+      const newStatus = action === 'approve' ? 'Accepted' : 'Cancelled';
 
       const payload = {
         action: 'UpdateBooking',
@@ -230,7 +230,7 @@ export default function AppointmentPage() {
                   onChange={(e) => setSelectedStatus(e.target.value)}
                 >
                   <MenuItem value="Booked">Booked</MenuItem>
-                  <MenuItem value="Approved">Approved</MenuItem>
+                  <MenuItem value="Accepted">Approved</MenuItem>
                   <MenuItem value="Cancelled">Cancelled</MenuItem>
                   <MenuItem value="Completed">Completed</MenuItem>
                 </Select>
@@ -386,7 +386,7 @@ export default function AppointmentPage() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDetailsDialog}>Close</Button>
-          {detailsDialog.booking && detailsDialog.booking.status !== 'Approved' && detailsDialog.booking.status !== 'Cancelled' && (
+          {detailsDialog.booking && detailsDialog.booking.status !== 'Accepted' && detailsDialog.booking.status !== 'Cancelled' && (
             <Button
               onClick={() => {
                 handleCloseDetailsDialog();
