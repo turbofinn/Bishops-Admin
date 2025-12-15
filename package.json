@@ -16,7 +16,8 @@
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
     "prettier": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
-    "knip": "knip"
+    "knip": "knip",
+    "deploy": "npm run build && aws s3 sync ./dist s3://bishops-admin --delete --region eu-west-2 --profile bishops-admin"
   },
   "dependencies": {
     "@ant-design/colors": "7.2.0",
