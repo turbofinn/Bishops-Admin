@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 

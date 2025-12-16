@@ -59,6 +59,9 @@ export default function Profile() {
   const handleLogout = () => {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('user');
+    localStorage.removeItem('bishops-token');
+    localStorage.removeItem('bishops-refersh-token');
+    localStorage.removeItem('clientID');
     sessionStorage.removeItem('isLoggedIn');
     sessionStorage.removeItem('user');
     handleClose();

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable prettier/prettier */
 
 import { useState, useEffect } from 'react';
@@ -59,9 +60,13 @@ export default function PaymentPage() {
                 pharmacyNo
             };
 
+            const token = localStorage.getItem('bishops-token');
             const response = await fetch('https://7n0wver1gl.execute-api.eu-west-2.amazonaws.com/dev/fetch-payment-by-date', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                },
                 body: JSON.stringify(payload)
             });
 
