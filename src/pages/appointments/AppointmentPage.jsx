@@ -90,14 +90,17 @@ export default function AppointmentPage() {
           bookingDate: booking.date || formattedDate,
           slot: booking.slot || '',
           meridiem: booking.meridiem || 'AM',
-          paymentMethod: booking.paymentMethod || 'N/A',
+          paymentMethod: booking.paymentMode || booking.paymentMethod || 'N/A',
+          paymentStatus: booking.paymentStatus || 'N/A',
           paymentAmount: booking.paymentAmount || 'N/A',
+          paymentId: booking.paymentId || 'N/A',
+          appointmentNo: booking.appointmentNo || 'N/A',
           status: booking.status || 'Booked',
           userID: booking.userID || '',
           pharmacyNo: booking.consultantID || pharmacyNo,
           type: booking.type || '',
           consultationType: booking.consultationType || booking.consultationType || '',
-          isConsultation: booking.type === 'consultation' || false,
+          isConsultation: booking.type?.toLowerCase() === 'consultation' || false,
           consultationDetails: booking.consultationDetails || null
         }));
         setBookings(transformedBookings);
@@ -280,15 +283,13 @@ export default function AppointmentPage() {
         <DialogContent>
           {detailsDialog.booking && (
             <Box sx={{ pt: 1 }}>
-              {/* Booking Details Section */}
-
               {/* Patient Information Section */}
               <Typography variant="h6" sx={{ mb: 1 }}>
                 Patient Information
               </Typography>
               <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
                 <Grid container spacing={2}>
-                  <Grid item xs={12}>
+                  <Grid item xs={12} sm={6}>
                     <Typography variant="subtitle1" fontWeight="bold">
                       Patient Name
                     </Typography>
@@ -296,91 +297,117 @@ export default function AppointmentPage() {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <Typography variant="subtitle1" fontWeight="bold">
-                      User ID
-                    </Typography>
-                    <Typography variant="body1">{detailsDialog.booking.userID || 'N/A'}</Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="subtitle1" fontWeight="bold">
                       Phone Number
                     </Typography>
                     <Typography variant="body1">{detailsDialog.booking.phoneNumber || 'N/A'}</Typography>
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      Appointment Date
+                    </Typography>
+                    <Typography variant="body1">{detailsDialog.booking.bookingDate || 'N/A'}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      Time Slot
+                    </Typography>
+                    <Typography variant="body1">
+                      {detailsDialog.booking.slot} {detailsDialog.booking.meridiem}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      Booking Type
+                    </Typography>
+                    <Typography variant="body1">
+                      {detailsDialog.booking.isConsultation ? 'Consultation' : 'Vaccination'}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      AppointmentNo ID
+                    </Typography>
+                    <Typography variant="body1">{detailsDialog.booking.appointmentNo || 'N/A'}</Typography>
+                  </Grid>
+                </Grid>
+              </Paper>
+
+              {/* Payment Details Section */}
+              <Typography variant="h6" sx={{ mb: 1 }}>
+                Payment Details
+              </Typography>
+              <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      Payment Amount
+                    </Typography>
+                    <Typography variant="body1">€ {detailsDialog.booking.paymentAmount || 'N/A'}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      Status
+                    </Typography>
+                    <Typography variant="body1">{detailsDialog.booking.status || 'N/A'}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
                     <Typography variant="subtitle1" fontWeight="bold">
                       Payment Method
                     </Typography>
                     <Typography variant="body1">{detailsDialog.booking.paymentMethod || 'N/A'}</Typography>
                   </Grid>
-                </Grid>
-              </Paper>
-
-              {/* Booking Type Section */}
-              <Typography variant="h6" sx={{ mb: 1 }}>
-                Appointment Type
-              </Typography>
-              <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
+                  <Grid item xs={12} sm={6}>
                     <Typography variant="subtitle1" fontWeight="bold">
-                      {detailsDialog.booking.isConsultation ? 'Consultation' : 'Vaccination'}
+                      Payment Status
                     </Typography>
-                    {detailsDialog.booking.isConsultation && (
-                      <>
-                        <Typography variant="subtitle1" fontWeight="bold">
-                          Consultation Type
-                        </Typography>
-                        <Typography variant="body1">{detailsDialog.booking.consultationType || 'N/A'}</Typography>
-                        {detailsDialog.booking.consultationDetails && (
-                          <>
-                            <Typography variant="subtitle1" fontWeight="bold">
-                              Details
-                            </Typography>
-                            <Typography variant="body1">{detailsDialog.booking.consultationDetails}</Typography>
-                          </>
-                        )}
-                      </>
-                    )}
+                    <Typography variant="body1">{detailsDialog.booking.paymentStatus || 'N/A'}</Typography>
                   </Grid>
                 </Grid>
               </Paper>
 
-              {/* Rest of your existing dialog content... */}
-
-              {/* Vaccine Information Section */}
-              <Typography variant="h6" sx={{ mb: 1 }}>
-                Vaccine Information
-              </Typography>
-              <Paper variant="outlined" sx={{ p: 2 }}>
-                <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
-                  Selected Vaccines
-                </Typography>
-                {detailsDialog.booking.vaccinesIDs && (
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 1
-                    }}
-                  >
-                    {JSON.parse(detailsDialog.booking.vaccinesIDs).map((vaccine, i) => (
-                      <Paper
-                        key={i}
-                        variant="outlined"
+              {/* Vaccine Information Section - Only show if not consultation or has vaccines */}
+              {(!detailsDialog.booking.isConsultation || 
+                (detailsDialog.booking.vaccinesIDs && 
+                 detailsDialog.booking.vaccinesIDs !== '[]' && 
+                 JSON.parse(detailsDialog.booking.vaccinesIDs).length > 0)) && (
+                <>
+                  <Typography variant="h6" sx={{ mb: 1 }}>
+                    Vaccine Information
+                  </Typography>
+                  <Paper variant="outlined" sx={{ p: 2 }}>
+                    <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
+                      Selected Vaccines
+                    </Typography>
+                    {detailsDialog.booking.vaccinesIDs && detailsDialog.booking.vaccinesIDs !== '[]' ? (
+                      <Box
                         sx={{
-                          p: 1.5,
                           display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center'
+                          flexDirection: 'column',
+                          gap: 1
                         }}
                       >
-                        <Typography>{vaccine.vaccineName}</Typography>
-                        <Chip label={`Qty: ${vaccine.quantity || 1}`} color="primary" size="small" />
-                      </Paper>
-                    ))}
-                  </Box>
-                )}
-              </Paper>
+                        {JSON.parse(detailsDialog.booking.vaccinesIDs).map((vaccine, i) => (
+                          <Box
+                            key={i}
+                            sx={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center'
+                            }}
+                          >
+                            <Typography>{vaccine.vaccineName}</Typography>
+                            <Typography variant="body2">Qty: {vaccine.quantity || 1}</Typography>
+                          </Box>
+                        ))}
+                      </Box>
+                    ) : (
+                      <Typography variant="body2" color="text.secondary">
+                        No vaccines selected
+                      </Typography>
+                    )}
+                  </Paper>
+                </>
+              )}
             </Box>
           )}
         </DialogContent>

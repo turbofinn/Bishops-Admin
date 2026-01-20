@@ -40,8 +40,9 @@ export default function AuthLogin() {
     const deviceID = uuidv4();
     try {
       const response = await axios.post('https://7n0wver1gl.execute-api.eu-west-2.amazonaws.com/dev/send-otp', {
-        mobileNo,
-        deviceID
+        mobileNo:  mobileNo,
+        deviceID,
+        portal: 'Admin'
       });
       localStorage.setItem('clientID', response.data.clientID);
       setSuccess('OTP sent successfully!');
