@@ -99,7 +99,7 @@ export default function AppointmentPage() {
           userID: booking.userID || '',
           pharmacyNo: booking.consultantID || pharmacyNo,
           type: booking.type || '',
-          consultationType: booking.consultationType || booking.consultationType || '',
+          consultationType: booking.consultationType || booking.consultancyType || 'N/A',
           isConsultation: booking.type?.toLowerCase() === 'consultation' || false,
           consultationDetails: booking.consultationDetails || null
         }));
@@ -329,6 +329,16 @@ export default function AppointmentPage() {
                     </Typography>
                     <Typography variant="body1">{detailsDialog.booking.appointmentNo || 'N/A'}</Typography>
                   </Grid>
+                  {detailsDialog.booking.isConsultation && (
+                    <Grid item xs={12}>
+                      <Typography variant="subtitle1" fontWeight="bold">
+                        Consultation Type
+                      </Typography>
+                      <Typography variant="body1">
+                        {detailsDialog.booking.consultationType || 'N/A'}
+                      </Typography>
+                    </Grid>
+                  )}
                 </Grid>
               </Paper>
 
