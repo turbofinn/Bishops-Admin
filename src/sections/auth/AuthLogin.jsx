@@ -31,10 +31,16 @@ export default function AuthLogin() {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
   const [success, setSuccess] = React.useState('');
+  const [mobileError, setMobileError] = React.useState('');
   const navigate = useNavigate();
 
   const handleCloseError = () => setError('');
   const handleCloseSuccess = () => setSuccess('');
+
+  const handleMobileChange = (e, handleChange) => {
+    setMobileError('');
+    handleChange(e);
+  };
 
   const sendOtp = async (mobileNo) => {
     const deviceID = uuidv4();
@@ -44,12 +50,29 @@ export default function AuthLogin() {
         deviceID,
         portal: 'Admin'
       });
+      
+    
+      if (response.data?.responseStatus?.code === 9999) {
+        const errorMsg = 'This mobile number is not registered as an admin';
+        setError(errorMsg);
+        setMobileError(errorMsg);
+        return;
+      }
+      
       localStorage.setItem('clientID', response.data.clientID);
       setSuccess('OTP sent successfully!');
       setShowOtp(true);
     } catch (err) {
       console.error(err);
-      setError('Failed to send OTP');
+     
+      if (err.response?.data?.responseStatus?.code === 9999) {
+        const errorMsg = 'This mobile number is not registered as an admin';
+        setError(errorMsg);
+        setMobileError(errorMsg);
+      } else {
+        const errorMsg = err.response?.data?.responseStatus?.message || 'Failed to send OTP';
+        setError(errorMsg);
+      }
     }
   };
 
@@ -118,11 +141,12 @@ export default function AuthLogin() {
                     placeholder="Enter mobile number"
                     value={values.mobileNo}
                     onBlur={handleBlur}
-                    onChange={handleChange}
+                    onChange={(e) => handleMobileChange(e, handleChange)}
                     fullWidth
-                    error={Boolean(touched.mobileNo && errors.mobileNo)}
+                    error={Boolean((touched.mobileNo && errors.mobileNo) || mobileError)}
                   />
                   {touched.mobileNo && errors.mobileNo && <FormHelperText error>{errors.mobileNo}</FormHelperText>}
+                  {mobileError && <FormHelperText error>{mobileError}</FormHelperText>}
                 </Stack>
               </Grid>
 
@@ -173,13 +197,23 @@ export default function AuthLogin() {
         )}
       </Formik>
 
-      <Snackbar open={!!error} autoHideDuration={6000} onClose={handleCloseError}>
+      <Snackbar 
+        open={!!error} 
+        autoHideDuration={6000} 
+        onClose={handleCloseError}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
         <Alert onClose={handleCloseError} severity="error">
           {error}
         </Alert>
       </Snackbar>
 
-      <Snackbar open={!!success} autoHideDuration={3000} onClose={handleCloseSuccess}>
+      <Snackbar 
+        open={!!success} 
+        autoHideDuration={3000} 
+        onClose={handleCloseSuccess}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
         <Alert onClose={handleCloseSuccess} severity="success">
           {success}
         </Alert>
