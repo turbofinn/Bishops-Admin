@@ -1,5 +1,5 @@
 // assets
-import { DashboardOutlined, ScheduleOutlined, ContactsOutlined, MedicineBoxOutlined, UserAddOutlined } from '@ant-design/icons';
+import { DashboardOutlined, ScheduleOutlined, ContactsOutlined, MedicineBoxOutlined, UserAddOutlined, CloseCircleOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
@@ -7,7 +7,8 @@ const icons = {
   ContactsOutlined,
   MedicineBoxOutlined,
   UserAddOutlined,
-  ScheduleOutlined
+  ScheduleOutlined,
+  CloseCircleOutlined
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
@@ -48,6 +49,14 @@ const dashboard = {
       type: 'item',
       url: '/dashboard/payments',
       icon: icons.ScheduleOutlined,
+      breadcrumbs: false
+    },
+    {
+      id: 'close-booking',
+      title: 'Close Booking',
+      type: 'item',
+      url: '/dashboard/close-booking',
+      icon: icons.CloseCircleOutlined,
       breadcrumbs: false
     },
     {

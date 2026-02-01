@@ -70,7 +70,7 @@ export default function Profile() {
 
   if (!isLoggedIn) return null;
 
-  const displayName = 'Bishops Admin';
+  const displayName = 'Admin Panel' ;
 
   return (
     <Box sx={{ flexShrink: 0, ml: 0.75 }}>
@@ -84,7 +84,7 @@ export default function Profile() {
         <Stack direction="row" alignItems="center" spacing={0.5} sx={{ p: 0.25 }}>
           <Avatar sx={{ width: 28, height: 28, fontSize: 12 }}>B</Avatar>
           <Typography variant="body2" sx={{ fontWeight: 600, ml: 0.5 }}>
-            Bishops Admin
+             Admin Panel
           </Typography>
           <ExpandMoreIcon fontSize="small" sx={{ ml: 0.25, opacity: 0.8 }} />
         </Stack>

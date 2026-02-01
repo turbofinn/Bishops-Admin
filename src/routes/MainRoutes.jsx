@@ -14,6 +14,7 @@ const VaccinePage = Loadable(lazy(() => import('pages/vaccines/VaccinePage')));
 const BookingPage = Loadable(lazy(() => import('pages/bookings/BookingPage')));
 const AppointmentPage = Loadable(lazy(() => import('pages/appointments/AppointmentPage')));
 const Users = Loadable(lazy(() => import('pages/users/UserPage')));
+const CloseBookingPage = Loadable(lazy(() => import('pages/closeBooking/CloseBookingPage')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -52,6 +53,11 @@ const MainRoutes = {
         {
           path: 'Payments',
           element: <PaymentPage />
+        },
+
+        {
+          path: 'close-booking',
+          element: <CloseBookingPage />
         },
 
         {

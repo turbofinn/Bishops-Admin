@@ -53,7 +53,7 @@ export default function AuthLogin() {
       
     
       if (response.data?.responseStatus?.code === 9999) {
-        const errorMsg = 'This mobile number is not registered as an admin';
+        const errorMsg = 'You are not authenticated to login.';
         setError(errorMsg);
         setMobileError(errorMsg);
         return;
@@ -66,7 +66,7 @@ export default function AuthLogin() {
       console.error(err);
      
       if (err.response?.data?.responseStatus?.code === 9999) {
-        const errorMsg = 'This mobile number is not registered as an admin';
+        const errorMsg = 'You are not authenticated to login.';
         setError(errorMsg);
         setMobileError(errorMsg);
       } else {

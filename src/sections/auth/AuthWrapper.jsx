@@ -46,7 +46,7 @@ export default function AuthWrapper({ children }) {
                       lineHeight: 1.1
                     }}
                   >
-                    Bishops Pharmacy
+                    Bishops Waltham Pharmacy
                   </Typography>
                   <Typography
                     variant="h5"
