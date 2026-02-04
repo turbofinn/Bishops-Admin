@@ -13,9 +13,7 @@ import LogoutOutlined from '@ant-design/icons/LogoutOutlined';
 import UserOutlined from '@ant-design/icons/UserOutlined';
 import WalletOutlined from '@ant-design/icons/WalletOutlined';
 
-// ==============================|| HEADER PROFILE - PROFILE TAB ||============================== //
-
-export default function ProfileTab() {
+export default function ProfileTab({ handleLogout }) {
   return (
     <List component="nav" sx={{ p: 0, '& .MuiListItemIcon-root': { minWidth: 32 } }}>
       <ListItemButton>
@@ -30,7 +28,6 @@ export default function ProfileTab() {
         </ListItemIcon>
         <ListItemText primary="View Profile" />
       </ListItemButton>
-
       <ListItemButton>
         <ListItemIcon>
           <ProfileOutlined />
@@ -43,7 +40,7 @@ export default function ProfileTab() {
         </ListItemIcon>
         <ListItemText primary="Billing" />
       </ListItemButton>
-      <ListItemButton>
+      <ListItemButton onClick={handleLogout}>
         <ListItemIcon>
           <LogoutOutlined />
         </ListItemIcon>

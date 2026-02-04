@@ -46,7 +46,7 @@ export default function DashboardLayout() {
         >
           {pathname !== '/apps/profiles/account/my-account' && <Breadcrumbs />}
           <Outlet />
-          <Footer />
+
         </Box>
       </Box>
     </Box>

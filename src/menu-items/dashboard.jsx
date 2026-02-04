@@ -1,54 +1,62 @@
 // assets
-import { DashboardOutlined } from '@ant-design/icons';
-import { ContactsOutlined } from '@ant-design/icons';
-import { MedicineBoxOutlined } from '@ant-design/icons';
-import { UserAddOutlined } from '@ant-design/icons';
+import { DashboardOutlined, ScheduleOutlined, ContactsOutlined, MedicineBoxOutlined, UserAddOutlined, CloseCircleOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
   DashboardOutlined,
   ContactsOutlined,
   MedicineBoxOutlined,
-  UserAddOutlined
+  UserAddOutlined,
+  ScheduleOutlined,
+  CloseCircleOutlined
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
 
 const dashboard = {
   id: 'group-dashboard',
-  title: 'Navigation',
+  title: '',
   type: 'group',
   children: [
     {
-      id: 'dashboard',
-      title: 'Dashboard',
+      id: 'appointments',
+      title: 'Appointments',
       type: 'item',
-      url: '/dashboard/default',
-      icon: icons.DashboardOutlined,
+      url: '/',
+      icon: icons.ScheduleOutlined,
       breadcrumbs: false
     },
     {
       id: 'vaccines',
-      title: 'Vaccines',
+      title: 'Vaccine list',
       type: 'item',
       url: '/dashboard/vaccines',
       icon: icons.MedicineBoxOutlined,
       breadcrumbs: false
     },
+
     {
       id: 'booking',
-      title: 'Bookings',
+      title: 'Vaccine Bookings',
       type: 'item',
-      url: '/dashboard/bookings',
+      url: '/dashboard/vaccine-bookings',
       icon: icons.ContactsOutlined,
       breadcrumbs: false
     },
     {
-      id: 'users',
-      title: 'Users',
+      id: 'payments',
+      title: 'Payments',
       type: 'item',
-      url: '/dashboard/users',
-      icon: icons.UserAddOutlined,
+      url: '/dashboard/payments',
+      icon: icons.ScheduleOutlined,
+      breadcrumbs: false
+    },
+    {
+      id: 'close-booking',
+      title: 'Close Booking',
+      type: 'item',
+      url: '/dashboard/close-booking',
+      icon: icons.CloseCircleOutlined,
       breadcrumbs: false
     }
   ]

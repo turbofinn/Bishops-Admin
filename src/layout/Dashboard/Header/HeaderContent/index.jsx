@@ -5,9 +5,8 @@ import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
 
 // project imports
-import Search from './Search';
 import Profile from './Profile';
-import Notification from './Notification';
+
 import MobileSection from './MobileSection';
 
 // project import
@@ -20,9 +19,9 @@ export default function HeaderContent() {
 
   return (
     <>
-      {!downLG && <Search />}
+      <Box sx={{ flexGrow: 1 }} />
       {downLG && <Box sx={{ width: '100%', ml: 1 }} />}
-      <IconButton
+      {/* <IconButton
         component={Link}
         href="https://github.com/codedthemes/mantis-free-react-admin-template"
         target="_blank"
@@ -32,9 +31,9 @@ export default function HeaderContent() {
         sx={{ color: 'text.primary', bgcolor: 'grey.100' }}
       >
         <GithubOutlined />
-      </IconButton>
+      </IconButton> */}
 
-      <Notification />
+      {/* <Notification /> */}
       {!downLG && <Profile />}
       {downLG && <MobileSection />}
     </>

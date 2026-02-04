@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import PropTypes from 'prop-types';
 import { Link, useLocation, matchPath } from 'react-router-dom';
 
@@ -50,7 +51,7 @@ export default function NavItem({ item, level, isParents = false, setSelectedID 
   );
 
   const { pathname } = useLocation();
-  const isSelected = !!matchPath({ path: item?.link ? item.link : item.url, end: false }, pathname);
+  const isSelected = !!matchPath({ path: item?.link ? item.link : item.url, end: true }, pathname);
 
   const textColor = 'text.primary';
   const iconSelectedColor = 'primary.main';

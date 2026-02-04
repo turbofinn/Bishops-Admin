@@ -1,195 +1,121 @@
-import PropTypes from 'prop-types';
-import { useRef, useState } from 'react';
+/* eslint-disable prettier/prettier */
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // material-ui
-import { useTheme } from '@mui/material/styles';
 import ButtonBase from '@mui/material/ButtonBase';
-import CardContent from '@mui/material/CardContent';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
-import Grid from '@mui/material/Grid2';
-import Paper from '@mui/material/Paper';
-import Popper from '@mui/material/Popper';
 import Stack from '@mui/material/Stack';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-
-// project imports
-import ProfileTab from './ProfileTab';
-import SettingTab from './SettingTab';
-import Avatar from 'components/@extended/Avatar';
-import MainCard from 'components/MainCard';
-import Transitions from 'components/@extended/Transitions';
-import IconButton from 'components/@extended/IconButton';
-
-// assets
+import Avatar from '@mui/material/Avatar';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LogoutOutlined from '@ant-design/icons/LogoutOutlined';
-import SettingOutlined from '@ant-design/icons/SettingOutlined';
-import UserOutlined from '@ant-design/icons/UserOutlined';
-import avatar1 from 'assets/images/users/avatar-1.png';
-
-// tab panel wrapper
-function TabPanel({ children, value, index, ...other }) {
-  return (
-    <div role="tabpanel" hidden={value !== index} id={`profile-tabpanel-${index}`} aria-labelledby={`profile-tab-${index}`} {...other}>
-      {value === index && children}
-    </div>
-  );
-}
-
-function a11yProps(index) {
-  return {
-    id: `profile-tab-${index}`,
-    'aria-controls': `profile-tabpanel-${index}`
-  };
-}
-
-// ==============================|| HEADER CONTENT - PROFILE ||============================== //
 
 export default function Profile() {
-  const theme = useTheme();
+  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    localStorage.getItem('isLoggedIn') === 'true' || sessionStorage.getItem('isLoggedIn') === 'true'
+  );
 
-  const anchorRef = useRef(null);
-  const [open, setOpen] = useState(false);
-  const handleToggle = () => {
-    setOpen((prevOpen) => !prevOpen);
+  useEffect(() => {
+    const checkAuth = () => {
+      const loggedIn = localStorage.getItem('isLoggedIn') === 'true' || sessionStorage.getItem('isLoggedIn') === 'true';
+      const accessToken = localStorage.getItem('bishops-token');
+
+      if (!loggedIn || !accessToken) {
+        setIsLoggedIn(false);
+        navigate('/login', { replace: true });
+      } else {
+        setIsLoggedIn(loggedIn);
+      }
+    };
+
+    checkAuth();
+
+    const handleStorageChange = (e) => {
+      if (e.key === 'isLoggedIn' || e.key === 'bishops-token') {
+        checkAuth();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    const interval = setInterval(checkAuth, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [navigate]);
+
+  const handleOpen = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
+
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('user');
+    localStorage.removeItem('bishops-token');
+    localStorage.removeItem('bishops-refersh-token');
+    localStorage.removeItem('clientID');
+    sessionStorage.removeItem('isLoggedIn');
+    sessionStorage.removeItem('user');
+    handleClose();
+    navigate('/login');
   };
 
-  const handleClose = (event) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target)) {
-      return;
-    }
-    setOpen(false);
-  };
+  if (!isLoggedIn) return null;
 
-  const [value, setValue] = useState(0);
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
+  const displayName = 'Admin Panel' ;
 
   return (
     <Box sx={{ flexShrink: 0, ml: 0.75 }}>
       <ButtonBase
-        sx={(theme) => ({
-          p: 0.25,
-          bgcolor: open ? 'grey.100' : 'transparent',
-          borderRadius: 1,
-          '&:hover': { bgcolor: 'secondary.lighter' },
-          '&:focus-visible': { outline: `2px solid ${theme.palette.secondary.dark}`, outlineOffset: 2 },
-          ...theme.applyStyles('dark', { bgcolor: open ? 'background.default' : 'transparent', '&:hover': { bgcolor: 'secondary.light' } })
-        })}
-        aria-label="open profile"
-        ref={anchorRef}
-        aria-controls={open ? 'profile-grow' : undefined}
+        onClick={handleOpen}
+        aria-controls={open ? 'profile-menu' : undefined}
         aria-haspopup="true"
-        onClick={handleToggle}
+        aria-expanded={open ? 'true' : undefined}
+        sx={{ p: 0.25, borderRadius: 1 }}
       >
-        <Stack direction="row" sx={{ gap: 1.25, alignItems: 'center', p: 0.5 }}>
-          <Avatar alt="profile user" src={avatar1} size="sm" />
-          <Typography variant="subtitle1" sx={{ textTransform: 'capitalize' }}>
-            John Doe
+        <Stack direction="row" alignItems="center" spacing={0.5} sx={{ p: 0.25 }}>
+          <Avatar sx={{ width: 28, height: 28, fontSize: 12 }}>B</Avatar>
+          <Typography variant="body2" sx={{ fontWeight: 600, ml: 0.5 }}>
+             Admin Panel
           </Typography>
+          <ExpandMoreIcon fontSize="small" sx={{ ml: 0.25, opacity: 0.8 }} />
         </Stack>
       </ButtonBase>
-      <Popper
-        placement="bottom-end"
-        open={open}
-        anchorEl={anchorRef.current}
-        role={undefined}
-        transition
-        disablePortal
-        popperOptions={{
-          modifiers: [
-            {
-              name: 'offset',
-              options: {
-                offset: [0, 9]
-              }
-            }
-          ]
-        }}
-      >
-        {({ TransitionProps }) => (
-          <Transitions type="grow" position="top-right" in={open} {...TransitionProps}>
-            <Paper sx={(theme) => ({ boxShadow: theme.customShadows.z1, width: 290, minWidth: 240, maxWidth: { xs: 250, md: 290 } })}>
-              <ClickAwayListener onClickAway={handleClose}>
-                <MainCard elevation={0} border={false} content={false}>
-                  <CardContent sx={{ px: 2.5, pt: 3 }}>
-                    <Grid container justifyContent="space-between" alignItems="center">
-                      <Grid>
-                        <Stack direction="row" sx={{ gap: 1.25, alignItems: 'center' }}>
-                          <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
-                          <Stack>
-                            <Typography variant="h6">John Doe</Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              UI/UX Designer
-                            </Typography>
-                          </Stack>
-                        </Stack>
-                      </Grid>
-                      <Grid>
-                        <Tooltip title="Logout">
-                          <IconButton size="large" sx={{ color: 'text.primary' }}>
-                            <LogoutOutlined />
-                          </IconButton>
-                        </Tooltip>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
 
-                  <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <Tabs variant="fullWidth" value={value} onChange={handleChange} aria-label="profile tabs">
-                      <Tab
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          textTransform: 'capitalize',
-                          gap: 1.25,
-                          '& .MuiTab-icon': {
-                            marginBottom: 0
-                          }
-                        }}
-                        icon={<UserOutlined />}
-                        label="Profile"
-                        {...a11yProps(0)}
-                      />
-                      <Tab
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          textTransform: 'capitalize',
-                          gap: 1.25,
-                          '& .MuiTab-icon': {
-                            marginBottom: 0
-                          }
-                        }}
-                        icon={<SettingOutlined />}
-                        label="Setting"
-                        {...a11yProps(1)}
-                      />
-                    </Tabs>
-                  </Box>
-                  <TabPanel value={value} index={0} dir={theme.direction}>
-                    <ProfileTab />
-                  </TabPanel>
-                  <TabPanel value={value} index={1} dir={theme.direction}>
-                    <SettingTab />
-                  </TabPanel>
-                </MainCard>
-              </ClickAwayListener>
-            </Paper>
-          </Transitions>
-        )}
-      </Popper>
+      <Menu
+        id="profile-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        PaperProps={{ sx: { minWidth: 120, py: 0, boxShadow: 'none', border: '1px solid', borderColor: 'divider' } }}
+      >
+        <MenuItem
+          onClick={handleLogout}
+          sx={{
+            py: 0.2,
+            px: 1,
+            textTransform: 'none',
+            '&:hover': {
+              backgroundColor: 'transparent'
+            }
+          }}
+        >
+          <ListItemIcon sx={{ minWidth: 36, color: 'inherit' }}>
+            <LogoutOutlined />
+          </ListItemIcon>
+          Logout
+        </MenuItem>
+      </Menu>
     </Box>
   );
 }
-
-TabPanel.propTypes = { children: PropTypes.node, value: PropTypes.number, index: PropTypes.number, other: PropTypes.any };

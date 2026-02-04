@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { createBrowserRouter } from 'react-router-dom';
 
 // project imports
