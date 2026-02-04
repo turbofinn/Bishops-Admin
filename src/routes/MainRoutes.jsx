@@ -6,7 +6,6 @@ import DashboardLayout from 'layout/Dashboard';
 import AuthGuard from 'components/AuthGuard';
 import PaymentTable from '../sections/dashboard/default/PaymentTable';
 import PaymentPage from '../pages/PaymentPage/PaymentPage';
-import ServicePage from '../pages/Services/ServicePage';
 
 // render- Dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/default')));
@@ -58,11 +57,6 @@ const MainRoutes = {
         {
           path: 'close-booking',
           element: <CloseBookingPage />
-        },
-
-        {
-          path: 'Services',
-          element: <ServicePage />
         },
         {
           path: 'users',

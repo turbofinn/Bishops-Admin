@@ -5,7 +5,6 @@ import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
 
 // project imports
-import Search from './Search';
 import Profile from './Profile';
 
 import MobileSection from './MobileSection';
@@ -20,7 +19,7 @@ export default function HeaderContent() {
 
   return (
     <>
-      {!downLG && <Search />}
+      <Box sx={{ flexGrow: 1 }} />
       {downLG && <Box sx={{ width: '100%', ml: 1 }} />}
       {/* <IconButton
         component={Link}

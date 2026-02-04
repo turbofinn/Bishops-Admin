@@ -58,14 +58,6 @@ const dashboard = {
       url: '/dashboard/close-booking',
       icon: icons.CloseCircleOutlined,
       breadcrumbs: false
-    },
-    {
-      id: 'Services',
-      title: 'Services',
-      type: 'item',
-      url: '/dashboard/Services',
-      icon: icons.UserAddOutlined,
-      breadcrumbs: false
     }
   ]
 };

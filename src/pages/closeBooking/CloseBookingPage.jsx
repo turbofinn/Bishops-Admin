@@ -66,12 +66,14 @@ export default function CloseBookingPage() {
       newErrors.date = 'Date is required';
     }
     
-    if (!formData.closeTime) {
-      newErrors.closeTime = 'Close time is required';
-    }
-    
-    if (!formData.openTime) {
-      newErrors.openTime = 'Open time is required';
+    if (!formData.isClosed) {
+      if (!formData.closeTime) {
+        newErrors.closeTime = 'Close time is required';
+      }
+      
+      if (!formData.openTime) {
+        newErrors.openTime = 'Open time is required';
+      }
     }
     
     if (!formData.reason.trim()) {
@@ -114,16 +116,16 @@ export default function CloseBookingPage() {
       if (response.ok) {
         setSnackbar({
           open: true,
-          message: 'Schedule override saved successfully!',
+          message: 'Booking closure saved successfully!',
           severity: 'success'
         });
         
         // Reset form
         setFormData({
-          date: '',
-          closeTime: '',
+          date: getCurrentDate(),
+          closeTime: getCurrentTime(),
           isClosed: false,
-          openTime: '',
+          openTime: getCurrentTime(),
           reason: ''
         });
       } else {
@@ -132,7 +134,7 @@ export default function CloseBookingPage() {
     } catch (error) {
       setSnackbar({
         open: true,
-        message: `Failed to save schedule override: ${error.message}`,
+        message: `Failed to save booking closure: ${error.message}`,
         severity: 'error'
       });
     } finally {
@@ -148,7 +150,7 @@ export default function CloseBookingPage() {
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
       <Grid size={{ xs: 12, md: 12, lg: 12 }}>
         <Typography variant="h5" sx={{ mb: 3 }}>
-          Close Booking / Schedule Override
+          Close Booking
         </Typography>
 
         <MainCard sx={{ boxShadow: 3 }}>
@@ -172,23 +174,6 @@ export default function CloseBookingPage() {
               </Grid>
 
               <Grid size={{ xs: 12 }}>
-                <TextField
-                  name="closeTime"
-                  label="Close Time"
-                  type="time"
-                  fullWidth
-                  value={formData.closeTime}
-                  onChange={handleChange}
-                  error={!!errors.closeTime}
-                  helperText={errors.closeTime}
-                  InputLabelProps={{
-                    shrink: true
-                  }}
-                  required
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12 }}>
                 <FormControlLabel
                   control={<Switch checked={formData.isClosed} onChange={handleSwitchChange} name="isClosed" color="primary" />}
                   label="Completely Closed (No bookings allowed)"
@@ -196,22 +181,43 @@ export default function CloseBookingPage() {
                 />
               </Grid>
 
-              <Grid size={{ xs: 12 }}>
-                <TextField
-                  name="openTime"
-                  label="Open Time"
-                  type="time"
-                  fullWidth
-                  value={formData.openTime}
-                  onChange={handleChange}
-                  error={!!errors.openTime}
-                  helperText={errors.openTime}
-                  InputLabelProps={{
-                    shrink: true
-                  }}
-                  required
-                />
-              </Grid>
+              {!formData.isClosed && (
+                <>
+                  <Grid size={{ xs: 12 }}>
+                    <TextField
+                      name="openTime"
+                      label="Open Time"
+                      type="time"
+                      fullWidth
+                      value={formData.openTime}
+                      onChange={handleChange}
+                      error={!!errors.openTime}
+                      helperText={errors.openTime}
+                      InputLabelProps={{
+                        shrink: true
+                      }}
+                      required
+                    />
+                  </Grid>
+
+                  <Grid size={{ xs: 12 }}>
+                    <TextField
+                      name="closeTime"
+                      label="Close Time"
+                      type="time"
+                      fullWidth
+                      value={formData.closeTime}
+                      onChange={handleChange}
+                      error={!!errors.closeTime}
+                      helperText={errors.closeTime}
+                      InputLabelProps={{
+                        shrink: true
+                      }}
+                      required
+                    />
+                  </Grid>
+                </>
+              )}
 
               <Grid size={{ xs: 12 }}>
                 <TextField
@@ -239,7 +245,7 @@ export default function CloseBookingPage() {
                     disabled={saving}
                     size="large"
                   >
-                    {saving ? 'Saving...' : 'Save Schedule Override'}
+                    {saving ? 'Saving...' : 'Close Booking'}
                   </Button>
                 </Box>
               </Grid>
@@ -252,9 +258,9 @@ export default function CloseBookingPage() {
         open={snackbar.open}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%', fontWeight: 'bold', fontSize: '1.1rem', border: '2px solid', borderColor: snackbar.severity === 'success' ? 'green' : 'red' }}>
           {snackbar.message}
         </Alert>
       </Snackbar>
